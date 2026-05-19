@@ -26,5 +26,5 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy public/ --project-name NAMA_PROYEK_ANDA
+          command: pages deploy public/ --project-name library
           githubToken: ${{ secrets.GITHUB_TOKEN }}
