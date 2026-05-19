@@ -1,1 +1,1 @@
-Website ini dibuat menggunakan **Zine:** [kristoff-it/zine](https://github.com/kristoff-it/zine), sebuah *Static Site Generator* (SSG) modern yang ditulis menggunakan bahasa pemrograman **Zig**.
+Website ini dibangun menggunakan **[Zine](https://github.com/kristoff-it/zine)**, sebuah *Static Site Generator* (SSG) modern yang dikembangkan dengan bahasa pemrograman **Zig**.
