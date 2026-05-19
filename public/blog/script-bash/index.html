@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="id">
+	<head id="head">
+		<meta charset="utf-8">
+		<meta name="viewport" content="initial-scale=1">
+		<title>My Home</title>
+		<link type="text/css" rel="stylesheet" href="/style.css">
+		<link type="text/css" rel="stylesheet" href="/highlight.css">
+		
+	<style>
+		#prev-next {
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			margin-top: 40px;
+		}
+		
+		figure {
+			align-self: center;
+			text-align: center;
+			font-style: italic;
+		}
+		
+		.post {
+			display:flex;
+			flex-direction: column;
+		}
+	</style>
+
+	</head>
+	<body id="body">
+		<header class="site-header">
+			<nav class="top-nav">
+				<a class="nav-link" href="/">Home</a>
+				<a class="nav-link" href="/blog/">Blog</a>
+				<a class="nav-link" href="/about/">About</a>
+			</nav>
+		</header>
+
+		
+	<h1>Script Bash</h1>
+	<div class="post"><h2>Panduan dasar Bash untuk pemula. Mulai dari penggunaan terminal Linux hingga membuat automation sederhana dengan Bash Script.</h2><h2>1. Apa Itu Bash?</h2><p><strong>Bash</strong> (Bourne Again Shell) adalah <em>shell</em> / interpreter command line yang digunakan di Linux. Bash menjalankan perintah yang kamu ketik di terminal.</p><hr><h2>2. Struktur Dasar Bash Script</h2><p>Ekstensi file bash biasanya:</p><pre><code>.sh
+</code></pre><p>Contoh nama file: <code>backup.sh</code> , <code>script.sh</code></p><h3>Script Bash Pertama</h3><pre><code class="bash"><span class="comment">#!/bin/bash</span>
+
+<span class="constant function">echo</span> <span class="string constant">&quot;Hello World&quot;</span>
+</code></pre>
+<table><tr><th>Bagian</th><th>Fungsi</th></tr><tr><td><code>#!/bin/bash</code></td><td>Menentukan interpreter Bash</td></tr><tr><td><code>echo</code></td><td>Menampilkan teks ke terminal</td></tr></table><hr><h2>3. Membuat & Menjalankan Script</h2><table><tr><th>Langkah</th><th>Perintah</th></tr><tr><td>Buat file script</td><td><code>touch script.sh</code></td></tr><tr><td>Edit script (pakai nano)</td><td><code>nano script.sh</code></td></tr><tr><td>Beri izin eksekusi</td><td><code>chmod +x script.sh</code></td></tr><tr><td>Jalankan script</td><td><code>./script.sh</code></td></tr></table><blockquote><p><strong>Catatan:</strong> Tanpa izin eksekusi (<code>+x</code>), script tidak bisa dijalankan.</p></blockquote><hr><h2>4. Variabel</h2><p>Variabel digunakan untuk menyimpan data.</p><pre><code class="bash"><span class="comment">#!/bin/bash</span>
+
+<span class="property">nama</span>=<span class="string">&quot;Wildan&quot;</span>
+<span class="constant function">echo</span> <span class="constant operator">$</span><span class="constant property">nama</span>
+</code></pre>
+<p><strong>Output:</strong> <code>Wildan</code></p><h3>Aturan Penting</h3><p><strong>Benar:</strong> <code>nama=&quot;Linux&quot;</code> (tanpa spasi di sekitar <code>=</code>) <strong>Salah:</strong> <code>nama = &quot;Linux&quot;</code></p><hr><h2>5. Input User (read)</h2><p>Mengambil input dari user dengan <code>read</code>.</p><pre><code class="bash">
+<span class="comment">#!/bin/bash</span>
+<span class="constant function">echo</span> <span class="string constant">&quot;Masukkan nama:&quot;</span>
+<span class="constant function">read</span> <span class="constant">name</span>
+<span class="constant function">echo</span> <span class="string constant">&quot;Halo </span><span class="string constant operator">$</span><span class="string constant property">name</span><span class="string constant">&quot;</span>
+
+<span class="comment">## 6. Menampilkan Teks dengan `echo`</span>
+
+```<span class="constant function">bash</span>
+<span class="constant function">echo</span> <span class="string constant">&quot;Halo Dunia&quot;</span>
+</code></pre>
+<h3>Menulis ke File</h3><table><tr><th>Simbol</th><th>Fungsi</th><th>Contoh</th></tr><tr><td><code>&gt;</code></td><td>Menimpa / membuat file baru</td><td><code>echo &quot;Belajar Bash&quot; &gt; catatan.txt</code></td></tr><tr><td><code>&gt;&gt;</code></td><td>Menambahkan ke akhir file</td><td><code>echo &quot;Baris baru&quot; &gt;&gt; catatan.txt</code></td></tr></table><hr><h2>7. Operasi Matematika</h2><p>Gunakan <code>$(( ... ))</code> untuk operasi aritmatika.</p><pre><code class="bash"><span class="comment">#!/bin/bash</span>
+
+<span class="property">a</span>=10
+<span class="property">b</span>=5
+<span class="property">hasil</span>=$((<span class="property">a</span> + <span class="property">b</span>))
+<span class="constant function">echo</span> <span class="constant operator">$</span><span class="constant property">hasil</span>      <span class="comment"># Output: 15</span>
+</code></pre>
+<h3>Operator Dasar</h3><table><tr><th>Operator</th><th>Fungsi</th></tr><tr><td><code>+</code></td><td>Penjumlahan</td></tr><tr><td><code>-</code></td><td>Pengurangan</td></tr><tr><td><code>*</code></td><td>Perkalian</td></tr><tr><td><code>/</code></td><td>Pembagian</td></tr><tr><td><code>%</code></td><td>Modulus</td></tr></table><hr><h2>8. Kondisi If Else</h2><pre><code class="bash"><span class="comment">#!/bin/bash</span>
+
+<span class="property">angka</span>=10
+
+<span class="keyword">if</span> [ <span class="operator">$</span><span class="property">angka</span> -gt 5 ]; <span class="keyword">then</span>
+    <span class="constant function">echo</span> <span class="string constant">&quot;Lebih besar&quot;</span>
+<span class="keyword">else</span>
+    <span class="constant function">echo</span> <span class="string constant">&quot;Lebih kecil&quot;</span>
+<span class="keyword">fi</span>
+</code></pre>
+<h3>Operator Perbandingan (untuk angka)</h3><table><tr><th>Operator</th><th>Arti</th></tr><tr><td><code>-eq</code></td><td>Sama dengan</td></tr><tr><td><code>-ne</code></td><td>Tidak sama</td></tr><tr><td><code>-gt</code></td><td>Lebih besar</td></tr><tr><td><code>-lt</code></td><td>Lebih kecil</td></tr><tr><td><code>-ge</code></td><td>Lebih besar atau sama</td></tr><tr><td><code>-le</code></td><td>Lebih kecil atau sama</td></tr></table><hr><h2>9. Looping (Perulangan)</h2><h3>For Loop</h3><pre><code class="bash"><span class="keyword">for</span> <span class="property">i</span> <span class="keyword">in</span> 1 2 3 4 5
+<span class="keyword">do</span>
+    <span class="constant function">echo</span> <span class="constant operator">$</span><span class="constant property">i</span>
+<span class="keyword">done</span>
+</code></pre>
+<h3>While Loop</h3><pre><code class="bash"><span class="property">angka</span>=1
+<span class="keyword">while</span> [ <span class="operator">$</span><span class="property">angka</span> -le 5 ]
+<span class="keyword">do</span>
+    <span class="constant function">echo</span> <span class="constant operator">$</span><span class="constant property">angka</span>
+    <span class="property">angka</span>=$((<span class="property">angka</span> + 1))
+<span class="keyword">done</span>
+</code></pre>
+<hr><h2>10. Function</h2><p>Fungsi membuat kode dapat dipakai ulang.</p><pre><code class="bash"><span class="comment">#!/bin/bash</span>
+
+<span class="function">hello</span>() {
+    <span class="constant function">echo</span> <span class="string constant">&quot;Halo Dunia&quot;</span>
+}
+
+<span class="constant function">hello</span>   <span class="comment"># memanggil fungsi</span>
+</code></pre>
+<hr><h2>11. Argumen Script</h2><p>Tangkap input dari terminal saat menjalankan script.</p><p><strong>Script <code>argumen.sh</code> :</strong></p><pre><code class="bash"><span class="comment">#!/bin/bash</span>
+<span class="constant function">echo</span> <span class="string constant">&quot;Nama: </span><span class="string constant operator">$</span><span class="string constant property">1</span><span class="string constant">&quot;</span>
+<span class="constant function">echo</span> <span class="string constant">&quot;Umur: </span><span class="string constant operator">$</span><span class="string constant property">2</span><span class="string constant">&quot;</span>
+</code></pre>
+<p><strong>Jalankan:</strong></p><pre><code class="bash"><span class="constant function">./argumen.sh</span> <span class="constant">Wildan</span> <span class="constant">20</span>
+</code></pre>
+<p><strong>Output:</strong></p><pre><code>Nama: Wildan
+Umur: 20
+</code></pre><p>Penjelasan:</p><ul><li><code>$1</code> = argumen pertama</li><li><code>$2</code> = argumen kedua</li><li><code>$0</code> = nama script itu sendiri</li></ul><hr><h2>12. Manipulasi File & Folder</h2><table><tr><th>Perintah</th><th>Fungsi</th></tr><tr><td><code>mkdir project</code></td><td>Membuat folder</td></tr><tr><td><code>touch catatan.txt</code></td><td>Membuat file kosong</td></tr><tr><td><code>cp data.txt backup/</code></td><td>Copy file ke folder</td></tr><tr><td><code>mv lama.txt baru.txt</code></td><td>Memindahkan / rename file</td></tr><tr><td><code>rm file.txt</code></td><td>Hapus file</td></tr><tr><td><code>rm -r project/</code></td><td>Hapus folder beserta isinya</td></tr></table><blockquote><p>Hati-hati dengan <code>rm</code> karena menghapus secara permanen.</p></blockquote><hr><h2>13. Cek File & Folder</h2><pre><code class="bash"><span class="keyword">if</span> [ -f data.txt ]; <span class="keyword">then</span>
+    <span class="constant function">echo</span> <span class="string constant">&quot;File ditemukan&quot;</span>
+<span class="keyword">fi</span>
+</code></pre>
+<h3>Operator File</h3><table><tr><th>Operator</th><th>Fungsi</th></tr><tr><td><code>-f</code></td><td>True jika file biasa</td></tr><tr><td><code>-d</code></td><td>True jika folder</td></tr><tr><td><code>-e</code></td><td>True jika file/folder ada</td></tr></table><hr><h2>14. Redirect Output (lanjutan)</h2><table><tr><th>Simbol</th><th>Fungsi</th></tr><tr><td><code>&gt;</code></td><td>Menimpa isi file</td></tr><tr><td><code>&gt;&gt;</code></td><td>Menambahkan ke file</td></tr></table><p>Contoh gabungan:</p><pre><code class="bash"><span class="constant function">echo</span> <span class="string constant">&quot;Halo&quot;</span> <span class="operator">&gt;</span> file.txt
+<span class="constant function">echo</span> <span class="string constant">&quot;Dunia&quot;</span> <span class="operator">&gt;&gt;</span> file.txt
+</code></pre>
+<hr><h2>15. Permission File (Izin Akses)</h2><p>Memberi izin eksekusi pada script:</p><pre><code class="bash"><span class="constant function">chmod</span> <span class="constant">+x</span> <span class="constant">script.sh</span>
+</code></pre>
+<ul><li><code>+x</code> = tambah izin eksekusi</li><li><code>-x</code> = cabut izin eksekusi</li></ul><hr><h2>16. Environment Variable</h2><p>Variabel lingkungan untuk konfigurasi sistem.</p><pre><code class="bash"><span class="keyword">export</span> <span class="property">NAMA</span>=<span class="string">&quot;Wildan&quot;</span>
+<span class="constant function">echo</span> <span class="constant operator">$</span><span class="constant property">NAMA</span>
+</code></pre>
+<p>Agar variabel tersedia di semua sesi, bisa ditambahkan ke <code>~/.bashrc</code>.</p><hr><h2>17. Perintah Penting Bash</h2><table><tr><th>Perintah</th><th>Fungsi</th></tr><tr><td><code>echo</code></td><td>Menampilkan teks</td></tr><tr><td><code>read</code></td><td>Menerima input user</td></tr><tr><td><code>chmod</code></td><td>Mengubah permission file</td></tr><tr><td><code>export</code></td><td>Membuat environment variable</td></tr><tr><td><code>source</code></td><td>Menjalankan script di shell aktif</td></tr><tr><td><code>history</code></td><td>Melihat riwayat command</td></tr><tr><td><code>clear</code></td><td>Membersihkan terminal</td></tr></table><hr><h2>18. Shortcut Penting Terminal</h2><table><tr><th>Shortcut</th><th>Fungsi</th></tr><tr><td><code>Ctrl + C</code></td><td>Menghentikan proses yang berjalan</td></tr><tr><td><code>Ctrl + Z</code></td><td>Menjeda proses (suspend)</td></tr><tr><td><code>Tab</code></td><td>Auto-complete nama file/folder</td></tr><tr><td><code>Arrow Up</code></td><td>Menampilkan perintah sebelumnya</td></tr><tr><td><code>Ctrl + L</code></td><td>Membersihkan terminal</td></tr></table><hr><h2>19. Contoh Automation Sederhana</h2><p><strong>Backup folder otomatis (backup.sh):</strong></p><pre><code class="bash"><span class="comment">#!/bin/bash</span>
+<span class="constant function">mkdir</span> <span class="constant">backup</span>
+<span class="constant function">cp</span> <span class="constant">-r</span> <span class="constant">data</span> <span class="constant">backup/</span>
+<span class="constant function">echo</span> <span class="string constant">&quot;Backup selesai&quot;</span>
+</code></pre>
+<hr><h2>20. Tips Belajar Bash</h2><ul><li>Fokus memahami dasar terminal Linux terlebih dahulu.</li><li>Biasakan membuat script sederhana, lalu tingkatkan kompleksitasnya.</li><li>Gunakan <strong>komentar</strong> (diawali <code>#</code>) agar script mudah dipahami.</li><li>Gunakan <code>echo</code> untuk <em>debugging</em> (cetak nilai variabel).</li><li>Pelajari automation sedikit demi sedikit — jangan terburu-buru.</li></ul><pre><code class="bash"><span class="comment"># Ini contoh komentar</span>
+<span class="constant function">echo</span> <span class="string constant">&quot;Komentar tidak dieksekusi&quot;</span>
+</code></pre>
+<hr></div>
+	<div id="prev-next">
+		<div>
+			<a href="/blog/command-line-interface/">
+				←
+				<span>Command Line Interface</span>
+			</a>
+		</div>
+		<div>
+			<a href="/blog/google cloud-platform/">
+				<span>Google Cloud Platform</span>
+				→
+			</a>
+		</div>
+	</div>
+
+
+		<footer class="site-footer">
+			<span class="footer-credit">© 2026</span>
+		</footer>
+	</body>
+</html>

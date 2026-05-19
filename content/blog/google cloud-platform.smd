@@ -1,0 +1,162 @@
+---
+.title = "Google Cloud Platform",
+.date = @date("2026-05-19T23:40:00"),
+.author = "Wildan Firmani Quraisi",
+.layout = "post.shtml",
+.draft = false,
+---
+
+**Tujuan:** Panduan ini menjelaskan langkah-langkah dari nol untuk membuat Virtual Machine (VM) di Google Cloud, mengatur keamanan Firewall, mengonfigurasi SSH Key di OS Ubuntu Linux lokal, hingga melakukan koneksi dan pengujian server.
+
+---
+
+## 1. Pembuatan Virtual Machine (VM) di GCP
+
+Langkah pertama adalah menyewa atau membuat "komputer virtual" yang akan bertindak sebagai server.
+
+1. **Login ke Google Cloud Console**
+Buka browser dan masuk ke [console.cloud.google.com](https://console.cloud.google.com). Pastikan Anda sudah memilih Project yang benar di bagian atas layar.
+2. **Buka Menu Compute Engine**
+Pada menu navigasi kiri (ikon garis tiga), pilih **Compute Engine** > **VM instances**.
+3. **Buat Instance Baru**
+Klik tombol **Create Instance** dan isi konfigurasi berikut:
+* **Name:** Isi dengan nama server Anda (contoh: `server-demo`).
+* **Region & Zone:** Pilih lokasi server yang paling dekat dengan target pengguna Anda (contoh: `asia-southeast2` untuk Jakarta).
+* **Machine configuration:** Pilih spesifikasi RAM dan CPU sesuai kebutuhan (misal: *Series E2*, *Machine type e2-micro* untuk spesifikasi ringan/gratis).
+* **Boot disk:** Klik **Change**, lalu pilih Sistem Operasi (OS). Disarankan memilih **Debian GNU/Linux** atau **Ubuntu** versi terbaru (LTS). Klik *Select*.
+
+
+4. **Deploy Server**
+Klik tombol **Create** di paling bawah halaman. Tunggu sekitar 1-2 menit hingga status VM berubah menjadi centang hijau. Server Anda kini telah aktif.
+
+---
+
+## 2. Konfigurasi Firewall untuk Akses Publik & SSH
+
+Agar server dapat diakses dari luar (laptop Anda atau internet), port spesifik harus dibuka melalui Firewall GCP.
+
+1. **Buka Menu Firewall**
+Dari menu navigasi kiri, gulir ke bawah dan pilih **VPC network** > **Firewall**.
+2. **Pemeriksaan Port 22 (SSH)**
+Pastikan terdapat aturan bernama `default-allow-ssh`. Aturan ini secara *default* sudah ada dan berfungsi untuk mengizinkan koneksi SSH (Port 22).
+* *Jika tidak ada:* Klik **Create Firewall Rule**. Beri nama `allow-ssh`, arahkan *Target* ke `All instances in the network`, *Source IPv4 ranges* ke `0.0.0.0/0`, dan centang `tcp` lalu ketik `22`. Klik **Create**.
+
+
+3. **Pemeriksaan Port Web (Opsional)**
+Jika server akan digunakan untuk website, pastikan port 80 (HTTP) dan 443 (HTTPS) terbuka. Anda bisa melakukannya dengan kembali ke halaman **VM Instances**, klik nama VM, pilih **Edit**, lalu centang *Allow HTTP traffic* dan *Allow HTTPS traffic* di bagian Firewall.
+
+---
+
+## 3. Setup SSH Key di Laptop Lokal (Ubuntu Linux)
+
+Untuk alasan keamanan, koneksi ke server GCP sangat disarankan menggunakan metode *Asymmetric Cryptography* (Public & Private Key), bukan sekadar menggunakan password.
+
+1. **Buka Terminal Laptop Lokal**
+Buka aplikasi Terminal di Ubuntu Anda (`Ctrl + Alt + T`).
+2. **Buat Pasangan Kunci SSH (SSH Keypair)**
+Jalankan perintah berikut untuk membuat kunci pengaman:
+```bash
+ssh-keygen -t rsa -b 4096 -C "username_anda"
+
+```
+
+
+* **Penjelasan Sintaks:**
+* `ssh-keygen`: Program pembuka untuk membuat kunci.
+* `-t rsa`: Menggunakan algoritma enkripsi tipe RSA.
+* `-b 4096`: Ukuran kunci enkripsi (4096 bit sangat aman).
+* `-C "username_anda"`: Label/komentar kunci. Ganti `username_anda` dengan nama pengguna yang Anda inginkan (misal: `wildanfq`).
+
+
+* **Instruksi Tambahan:** Tekan **Enter** terus-menerus saat muncul permintaan direktori atau *passphrase* (jika tidak ingin menggunakan password tambahan).
+
+
+3. **Lihat dan Salin Public Key**
+Kunci Anda terbagi dua: Private Key (disimpan di laptop) dan Public Key (diserahkan ke server). Munculkan *Public Key* dengan perintah:
+
+```bash
+   cat ~/.ssh/id_rsa.pub
+```
+
+* *Catatan:* Jika Anda menamai file dengan nama lain saat *generate*, ganti `id_rsa.pub` dengan nama file Anda.
+* **Aksi:** Salin (Copy) seluruh teks panjang yang berawalan `ssh-rsa` dan berakhiran dengan `username_anda`.
+
+---
+
+## 4. Memasukkan Public Key ke Server (GCP)
+
+Agar server mengenali laptop Anda, *Public Key* yang disalin tadi harus dimasukkan ke dalam konfigurasi server di GCP.
+
+1. Kembali ke halaman **VM Instances** di Google Cloud Console.
+2. Klik **Nama VM** Anda, lalu klik tombol **Edit** di bagian atas (berlogo pensil).
+3. Gulir halaman ke bawah perlahan sampai menemukan bagian **Security and access**.
+4. Cari bagian **SSH Keys**, lalu klik **Add item**.
+5. Paste (tempel) *Public Key* yang sudah disalin dari terminal lokal Anda. GCP akan otomatis mendeteksi nama pengguna di sebelah kiri form.
+6. Gulir layar ke paling bawah dan klik tombol **Save**. Tunggu proses penyimpanan selesai.
+
+---
+
+## 5. Koneksi Laptop Lokal ke Server
+
+Sekarang laptop Anda sudah memiliki "kunci", dan server sudah memiliki "gembok" yang cocok.
+
+1. **Catat IP Publik Server**
+Lihat di halaman *VM Instances*, pada kolom **External IP**, catat deretan angka IP tersebut (misal: `34.101.32.154`).
+2. **Lakukan Eksekusi SSH**
+Di terminal Ubuntu lokal Anda, jalankan perintah berikut:
+
+```bash
+   ssh username_anda@IP_PUBLIK_SERVER
+```
+
+*(Contoh nyata: `ssh wildanfq@34.101.32.154`)*
+3. **Konfirmasi Keamanan (First Time Login)**
+Jika ini pertama kalinya Anda terhubung, terminal akan memunculkan pesan peringatan *The authenticity of host... can't be established*.
+
+* Ketik **`yes`** lalu tekan **Enter**.
+* Perintah ini akan mendaftarkan IP Server ke dalam daftar host yang dipercaya (Known Hosts) di laptop Anda secara permanen.
+
+---
+
+## 6. Testing dan Konfigurasi Awal Server
+
+Setelah login berhasil, indikator utamanya adalah perubahan baris perintah (prompt) di terminal Anda.
+
+### 1. Verifikasi Koneksi
+
+Anda bisa memastikan Anda sudah berada di server jika *prompt* berubah dari `user@nama-laptop-lokal:~$` menjadi:
+
+```bash
+username_anda@nama-vm-server:~$
+```
+
+### 2. Update Sistem Operasi (Testing Koneksi Internet Server)
+
+Sebagai langkah wajib pertama untuk server baru, perbarui repository dan aplikasi dasar untuk memastikan server aman dan stabil. Jalankan perintah:
+
+```bash
+sudo apt update && sudo apt upgrade -y
+```
+
+* **Penjelasan Sintaks:**
+* `sudo`: Menjalankan perintah dengan hak akses tertinggi (Administrator/Root).
+* `apt update`: Mengambil daftar pembaruan aplikasi terbaru dari server pusat Linux.
+* `&&`: Menjalankan perintah selanjutnya setelah perintah pertama sukses.
+* `apt upgrade`: Menginstal semua pembaruan yang tersedia.
+* `-y`: Otomatis menjawab "Yes" pada setiap konfirmasi instalasi.
+
+
+
+### 3. Mengakhiri Sesi (Log Out)
+
+Setelah selesai mengonfigurasi atau melakukan instalasi pada server, Anda dapat memutus koneksi secara aman untuk kembali ke laptop lokal menggunakan perintah:
+
+```bash
+exit
+```
+
+Terminal akan menginformasikan *Connection to IP closed*, dan Anda akan kembali ke direktori lokal Ubuntu Anda.
+
+---
+
+Server Anda kini siap untuk diinstal *web server* (Nginx/Apache), *database* (MySQL/PostgreSQL), atau aplikasi lainnya!

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="id">
+	<head id="head">
+		<meta charset="utf-8">
+		<meta name="viewport" content="initial-scale=1">
+		<title>My Home</title>
+		<link type="text/css" rel="stylesheet" href="/style.css">
+		<link type="text/css" rel="stylesheet" href="/highlight.css">
+		
+	<style>
+		#prev-next {
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			margin-top: 40px;
+		}
+		
+		figure {
+			align-self: center;
+			text-align: center;
+			font-style: italic;
+		}
+		
+		.post {
+			display:flex;
+			flex-direction: column;
+		}
+	</style>
+
+	</head>
+	<body id="body">
+		<header class="site-header">
+			<nav class="top-nav">
+				<a class="nav-link" href="/">Home</a>
+				<a class="nav-link" href="/blog/">Blog</a>
+				<a class="nav-link" href="/about/">About</a>
+			</nav>
+		</header>
+
+		
+	<h1>Command Line Interface</h1>
+	<div class="post"><table><tr><th>Perintah</th><th>Fungsi</th><th>Contoh</th></tr><tr><td><code>pwd</code></td><td>Menampilkan lokasi folder saat ini</td><td><code>pwd</code></td></tr><tr><td><code>ls</code></td><td>Melihat isi folder</td><td><code>ls</code></td></tr><tr><td><code>ls -l</code></td><td>Melihat isi folder dengan detail</td><td><code>ls -l</code></td></tr><tr><td><code>ls -a</code></td><td>Menampilkan file tersembunyi</td><td><code>ls -a</code></td></tr><tr><td><code>cd &lt;folder&gt;</code></td><td>Masuk ke folder tertentu</td><td><code>cd Documents</code></td></tr><tr><td><code>cd ..</code></td><td>Kembali ke folder sebelumnya</td><td><code>cd ..</code></td></tr><tr><td><code>clear</code></td><td>Membersihkan layar terminal</td><td><code>clear</code></td></tr><tr><td><code>mkdir &lt;nama&gt;</code></td><td>Membuat folder baru</td><td><code>mkdir belajar</code></td></tr><tr><td><code>touch &lt;file&gt;</code></td><td>Membuat file kosong</td><td><code>touch catatan.txt</code></td></tr><tr><td><code>cp &lt;sumber&gt; &lt;tujuan&gt;</code></td><td>Menyalin file</td><td><code>cp data.txt backup/</code></td></tr><tr><td><code>cp -r &lt;folder&gt; &lt;tujuan&gt;</code></td><td>Menyalin folder beserta isi</td><td><code>cp -r project backup/</code></td></tr><tr><td><code>mv &lt;sumber&gt; &lt;tujuan&gt;</code></td><td>Memindahkan atau rename file</td><td><code>mv lama.txt baru.txt</code></td></tr><tr><td><code>rm &lt;file&gt;</code></td><td>Menghapus file</td><td><code>rm catatan.txt</code></td></tr><tr><td><code>rm -r &lt;folder&gt;</code></td><td>Menghapus folder dan isi</td><td><code>rm -r project/</code></td></tr><tr><td><code>cat &lt;file&gt;</code></td><td>Menampilkan isi file</td><td><code>cat notes.txt</code></td></tr><tr><td><code>less &lt;file&gt;</code></td><td>Membaca file panjang per halaman</td><td><code>less log.txt</code></td></tr><tr><td><code>head &lt;file&gt;</code></td><td>Menampilkan 10 baris pertama</td><td><code>head data.txt</code></td></tr><tr><td><code>tail &lt;file&gt;</code></td><td>Menampilkan 10 baris terakhir</td><td><code>tail log.txt</code></td></tr><tr><td><code>nano &lt;file&gt;</code></td><td>Mengedit file di terminal</td><td><code>nano config.txt</code></td></tr><tr><td><code>echo &quot;teks&quot;</code></td><td>Menampilkan teks</td><td><code>echo &quot;Halo&quot;</code></td></tr><tr><td><code>Ctrl + O</code> (di nano)</td><td>Simpan file di nano</td><td>-</td></tr><tr><td><code>Ctrl + X</code> (di nano)</td><td>Keluar dari nano</td><td>-</td></tr><tr><td><code>Ctrl + K</code> (di nano)</td><td>Hapus baris di nano</td><td>-</td></tr><tr><td><code>whoami</code></td><td>Menampilkan user aktif</td><td><code>whoami</code></td></tr><tr><td><code>passwd</code></td><td>Mengganti password user</td><td><code>passwd</code></td></tr><tr><td><code>history</code></td><td>Menampilkan riwayat perintah</td><td><code>history</code></td></tr><tr><td><code>exit</code></td><td>Menutup terminal</td><td><code>exit</code></td></tr><tr><td><code>sudo &lt;perintah&gt;</code></td><td>Menjalankan perintah sebagai administrator</td><td><code>sudo apt update</code></td></tr><tr><td><code>sudo apt update</code></td><td>Memperbarui daftar paket</td><td><code>sudo apt update</code></td></tr><tr><td><code>sudo apt upgrade</code></td><td>Mengupdate sistem & aplikasi</td><td><code>sudo apt upgrade</code></td></tr><tr><td><code>sudo apt install &lt;app&gt;</code></td><td>Menginstal aplikasi</td><td><code>sudo apt install vlc</code></td></tr><tr><td><code>sudo apt remove &lt;app&gt;</code></td><td>Menghapus aplikasi</td><td><code>sudo apt remove vlc</code></td></tr><tr><td><code>top</code></td><td>Melihat proses berjalan</td><td><code>top</code></td></tr><tr><td><code>df -h</code></td><td>Melihat kapasitas penyimpanan</td><td><code>df -h</code></td></tr><tr><td><code>free -m</code></td><td>Melihat penggunaan RAM</td><td><code>free -m</code></td></tr><tr><td><code>uname -a</code></td><td>Informasi sistem Linux</td><td><code>uname -a</code></td></tr><tr><td><code>ping &lt;host&gt;</code></td><td>Mengecek koneksi internet/server</td><td><code>ping google.com</code></td></tr><tr><td><code>ip a</code></td><td>Menampilkan alamat IP</td><td><code>ip a</code></td></tr><tr><td><code>wget &lt;URL&gt;</code></td><td>Mengunduh file dari internet</td><td><code>wget https://example.com/file.zip</code></td></tr><tr><td><code>ssh user@host</code></td><td>Remote server via SSH</td><td><code>ssh admin@192.168.1.1</code></td></tr><tr><td><code>grep &quot;kata&quot; &lt;file&gt;</code></td><td>Mencari teks dalam file</td><td><code>grep &quot;error&quot; log.txt</code></td></tr><tr><td><code>find &lt;lokasi&gt; -name &quot;&lt;nama&gt;&quot;</code></td><td>Mencari file/folder</td><td><code>find /home -name &quot;foto.jpg&quot;</code></td></tr><tr><td><code>man &lt;perintah&gt;</code></td><td>Membuka dokumentasi perintah</td><td><code>man ls</code></td></tr><tr><td><code>Ctrl + C</code></td><td>Menghentikan proses</td><td>-</td></tr><tr><td><code>Ctrl + L</code></td><td>Membersihkan terminal</td><td>-</td></tr><tr><td><code>Tab</code></td><td>Auto-complete nama file/folder</td><td>-</td></tr><tr><td><code>Arrow Up</code></td><td>Melihat perintah sebelumnya</td><td>-</td></tr><tr><td><code>Ctrl + A</code></td><td>Pindah ke awal baris</td><td>-</td></tr><tr><td><code>Ctrl + E</code></td><td>Pindah ke akhir baris</td><td>-</td></tr></table></div>
+	<div id="prev-next">
+		<div>
+			<a href="/blog/linux-container/">
+				←
+				<span>Linux Containers</span>
+			</a>
+		</div>
+		<div>
+			<a href="/blog/script-bash/">
+				<span>Script Bash</span>
+				→
+			</a>
+		</div>
+	</div>
+
+
+		<footer class="site-footer">
+			<span class="footer-credit">© 2026</span>
+		</footer>
+	</body>
+</html>

@@ -1,0 +1,350 @@
+---
+.title = "Script Bash",
+.date = @date("2026-05-19T23:30:00"),
+.author = "Wildan Firmani Quraisi",
+.layout = "post.shtml",
+.draft = false,
+---
+Panduan dasar Bash untuk pemula.
+Mulai dari penggunaan terminal Linux hingga membuat automation sederhana dengan Bash Script.
+---
+
+## 1. Apa Itu Bash?
+
+**Bash** (Bourne Again Shell) adalah *shell* / interpreter command line yang digunakan di Linux.
+Bash menjalankan perintah yang kamu ketik di terminal.
+
+---
+
+## 2. Struktur Dasar Bash Script
+
+Ekstensi file bash biasanya:
+
+```
+.sh
+```
+
+Contoh nama file:
+`backup.sh` , `script.sh`
+
+### Script Bash Pertama
+
+```bash
+#!/bin/bash
+
+echo "Hello World"
+```
+
+| Bagian        | Fungsi                         |
+| ------------- | ------------------------------ |
+| `#!/bin/bash` | Menentukan interpreter Bash    |
+| `echo`        | Menampilkan teks ke terminal   |
+
+---
+
+## 3. Membuat & Menjalankan Script
+
+| Langkah                     | Perintah                          |
+| --------------------------- | --------------------------------- |
+| Buat file script            | `touch script.sh`                 |
+| Edit script (pakai nano)    | `nano script.sh`                  |
+| Beri izin eksekusi          | `chmod +x script.sh`              |
+| Jalankan script             | `./script.sh`                     |
+
+> **Catatan:** Tanpa izin eksekusi (`+x`), script tidak bisa dijalankan.
+
+---
+
+## 4. Variabel
+
+Variabel digunakan untuk menyimpan data.
+
+```bash
+#!/bin/bash
+
+nama="Wildan"
+echo $nama
+```
+
+**Output:**
+`Wildan`
+
+### Aturan Penting
+
+**Benar:** `nama="Linux"` (tanpa spasi di sekitar `=`)
+**Salah:** `nama = "Linux"`
+
+---
+
+## 5. Input User (read)
+
+Mengambil input dari user dengan `read`.
+
+```bash
+
+#!/bin/bash
+echo "Masukkan nama:"
+read name
+echo "Halo $name"
+
+## 6. Menampilkan Teks dengan `echo`
+
+```bash
+echo "Halo Dunia"
+```
+
+### Menulis ke File
+
+| Simbol | Fungsi                     | Contoh                                 |
+| ------ | -------------------------- | -------------------------------------- |
+| `>`    | Menimpa / membuat file baru | `echo "Belajar Bash" > catatan.txt`    |
+| `>>`   | Menambahkan ke akhir file   | `echo "Baris baru" >> catatan.txt`     |
+
+---
+
+## 7. Operasi Matematika
+
+Gunakan `$(( ... ))` untuk operasi aritmatika.
+
+```bash
+#!/bin/bash
+
+a=10
+b=5
+hasil=$((a + b))
+echo $hasil      # Output: 15
+```
+
+### Operator Dasar
+
+| Operator | Fungsi      |
+| -------- | ----------- |
+| `+`      | Penjumlahan |
+| `-`      | Pengurangan |
+| `*`      | Perkalian   |
+| `/`      | Pembagian   |
+| `%`      | Modulus     |
+
+---
+
+## 8. Kondisi If Else
+
+```bash
+#!/bin/bash
+
+angka=10
+
+if [ $angka -gt 5 ]; then
+    echo "Lebih besar"
+else
+    echo "Lebih kecil"
+fi
+```
+
+### Operator Perbandingan (untuk angka)
+
+| Operator | Arti                  |
+| -------- | --------------------- |
+| `-eq`    | Sama dengan           |
+| `-ne`    | Tidak sama            |
+| `-gt`    | Lebih besar           |
+| `-lt`    | Lebih kecil           |
+| `-ge`    | Lebih besar atau sama |
+| `-le`    | Lebih kecil atau sama |
+
+---
+
+## 9. Looping (Perulangan)
+
+### For Loop
+
+```bash
+for i in 1 2 3 4 5
+do
+    echo $i
+done
+```
+
+### While Loop
+
+```bash
+angka=1
+while [ $angka -le 5 ]
+do
+    echo $angka
+    angka=$((angka + 1))
+done
+```
+
+---
+
+## 10. Function
+
+Fungsi membuat kode dapat dipakai ulang.
+
+```bash
+#!/bin/bash
+
+hello() {
+    echo "Halo Dunia"
+}
+
+hello   # memanggil fungsi
+```
+
+---
+
+## 11. Argumen Script
+
+Tangkap input dari terminal saat menjalankan script.
+
+**Script `argumen.sh` :**
+```bash
+#!/bin/bash
+echo "Nama: $1"
+echo "Umur: $2"
+```
+
+**Jalankan:**
+```bash
+./argumen.sh Wildan 20
+```
+
+**Output:**
+```
+Nama: Wildan
+Umur: 20
+```
+
+Penjelasan:
+- `$1` = argumen pertama
+- `$2` = argumen kedua
+- `$0` = nama script itu sendiri
+
+---
+
+## 12. Manipulasi File & Folder
+
+| Perintah               | Fungsi                         |
+| ---------------------- | ------------------------------ |
+| `mkdir project`        | Membuat folder                 |
+| `touch catatan.txt`    | Membuat file kosong            |
+| `cp data.txt backup/`  | Copy file ke folder            |
+| `mv lama.txt baru.txt` | Memindahkan / rename file      |
+| `rm file.txt`          | Hapus file                     |
+| `rm -r project/`       | Hapus folder beserta isinya    |
+
+> Hati-hati dengan `rm` karena menghapus secara permanen.
+
+---
+
+## 13. Cek File & Folder
+
+```bash
+if [ -f data.txt ]; then
+    echo "File ditemukan"
+fi
+```
+
+### Operator File
+
+| Operator | Fungsi                   |
+| -------- | ------------------------ |
+| `-f`     | True jika file biasa     |
+| `-d`     | True jika folder         |
+| `-e`     | True jika file/folder ada|
+
+---
+
+## 14. Redirect Output (lanjutan)
+
+| Simbol | Fungsi               |
+| ------ | -------------------- |
+| `>`    | Menimpa isi file     |
+| `>>`   | Menambahkan ke file  |
+
+Contoh gabungan:
+```bash
+echo "Halo" > file.txt
+echo "Dunia" >> file.txt
+```
+
+---
+
+## 15. Permission File (Izin Akses)
+
+Memberi izin eksekusi pada script:
+```bash
+chmod +x script.sh
+```
+
+- `+x` = tambah izin eksekusi
+- `-x` = cabut izin eksekusi
+
+---
+
+## 16. Environment Variable
+
+Variabel lingkungan untuk konfigurasi sistem.
+
+```bash
+export NAMA="Wildan"
+echo $NAMA
+```
+
+Agar variabel tersedia di semua sesi, bisa ditambahkan ke `~/.bashrc`.
+
+---
+
+## 17. Perintah Penting Bash
+
+| Perintah  | Fungsi                            |
+| --------- | --------------------------------- |
+| `echo`    | Menampilkan teks                  |
+| `read`    | Menerima input user               |
+| `chmod`   | Mengubah permission file          |
+| `export`  | Membuat environment variable      |
+| `source`  | Menjalankan script di shell aktif |
+| `history` | Melihat riwayat command           |
+| `clear`   | Membersihkan terminal             |
+
+---
+
+## 18. Shortcut Penting Terminal
+
+| Shortcut   | Fungsi                          |
+| ---------- | ------------------------------- |
+| `Ctrl + C` | Menghentikan proses yang berjalan |
+| `Ctrl + Z` | Menjeda proses (suspend)        |
+| `Tab`      | Auto-complete nama file/folder  |
+| `Arrow Up` | Menampilkan perintah sebelumnya |
+| `Ctrl + L` | Membersihkan terminal           |
+
+---
+
+## 19. Contoh Automation Sederhana
+
+**Backup folder otomatis (backup.sh):**
+```bash
+#!/bin/bash
+mkdir backup
+cp -r data backup/
+echo "Backup selesai"
+```
+
+---
+
+## 20. Tips Belajar Bash
+
+- Fokus memahami dasar terminal Linux terlebih dahulu.
+- Biasakan membuat script sederhana, lalu tingkatkan kompleksitasnya.
+- Gunakan **komentar** (diawali `#`) agar script mudah dipahami.
+- Gunakan `echo` untuk *debugging* (cetak nilai variabel).
+- Pelajari automation sedikit demi sedikit — jangan terburu-buru.
+
+```bash
+# Ini contoh komentar
+echo "Komentar tidak dieksekusi"
+```
+
+---

@@ -1,0 +1,60 @@
+---
+.title = "Command Line Interface",
+.date = @date("2026-05-19T23:20:00"),
+.author = "Wildan Firmani Quraisi",
+.layout = "post.shtml",
+.draft = false,
+---
+
+
+| Perintah                       | Fungsi                                     | Contoh                              |
+| ------------------------------ | ------------------------------------------ | ----------------------------------- |
+| `pwd`                          | Menampilkan lokasi folder saat ini         | `pwd`                               |
+| `ls`                           | Melihat isi folder                         | `ls`                                |
+| `ls -l`                        | Melihat isi folder dengan detail           | `ls -l`                             |
+| `ls -a`                        | Menampilkan file tersembunyi               | `ls -a`                             |
+| `cd <folder>`                  | Masuk ke folder tertentu                   | `cd Documents`                      |
+| `cd ..`                        | Kembali ke folder sebelumnya               | `cd ..`                             |
+| `clear`                        | Membersihkan layar terminal                | `clear`                             |
+| `mkdir <nama>`                 | Membuat folder baru                        | `mkdir belajar`                     |
+| `touch <file>`                 | Membuat file kosong                        | `touch catatan.txt`                 |
+| `cp <sumber> <tujuan>`         | Menyalin file                              | `cp data.txt backup/`               |
+| `cp -r <folder> <tujuan>`      | Menyalin folder beserta isi                | `cp -r project backup/`             |
+| `mv <sumber> <tujuan>`         | Memindahkan atau rename file               | `mv lama.txt baru.txt`              |
+| `rm <file>`                    | Menghapus file                             | `rm catatan.txt`                    |
+| `rm -r <folder>`               | Menghapus folder dan isi                   | `rm -r project/`                    |
+| `cat <file>`                   | Menampilkan isi file                       | `cat notes.txt`                     |
+| `less <file>`                  | Membaca file panjang per halaman           | `less log.txt`                      |
+| `head <file>`                  | Menampilkan 10 baris pertama               | `head data.txt`                     |
+| `tail <file>`                  | Menampilkan 10 baris terakhir              | `tail log.txt`                      |
+| `nano <file>`                  | Mengedit file di terminal                  | `nano config.txt`                   |
+| `echo "teks"`                  | Menampilkan teks                           | `echo "Halo"`                       |
+| `Ctrl + O` (di nano)           | Simpan file di nano                        | -                                   |
+| `Ctrl + X` (di nano)           | Keluar dari nano                           | -                                   |
+| `Ctrl + K` (di nano)           | Hapus baris di nano                        | -                                   |
+| `whoami`                       | Menampilkan user aktif                     | `whoami`                            |
+| `passwd`                       | Mengganti password user                    | `passwd`                            |
+| `history`                      | Menampilkan riwayat perintah               | `history`                           |
+| `exit`                         | Menutup terminal                           | `exit`                              |
+| `sudo <perintah>`              | Menjalankan perintah sebagai administrator | `sudo apt update`                   |
+| `sudo apt update`              | Memperbarui daftar paket                   | `sudo apt update`                   |
+| `sudo apt upgrade`             | Mengupdate sistem & aplikasi               | `sudo apt upgrade`                  |
+| `sudo apt install <app>`       | Menginstal aplikasi                        | `sudo apt install vlc`              |
+| `sudo apt remove <app>`        | Menghapus aplikasi                         | `sudo apt remove vlc`               |
+| `top`                          | Melihat proses berjalan                    | `top`                               |
+| `df -h`                        | Melihat kapasitas penyimpanan              | `df -h`                             |
+| `free -m`                      | Melihat penggunaan RAM                     | `free -m`                           |
+| `uname -a`                     | Informasi sistem Linux                     | `uname -a`                          |
+| `ping <host>`                  | Mengecek koneksi internet/server           | `ping google.com`                   |
+| `ip a`                         | Menampilkan alamat IP                      | `ip a`                              |
+| `wget <URL>`                   | Mengunduh file dari internet               | `wget https://example.com/file.zip` |
+| `ssh user@host`                | Remote server via SSH                      | `ssh admin@192.168.1.1`             |
+| `grep "kata" <file>`           | Mencari teks dalam file                    | `grep "error" log.txt`              |
+| `find <lokasi> -name "<nama>"` | Mencari file/folder                        | `find /home -name "foto.jpg"`       |
+| `man <perintah>`               | Membuka dokumentasi perintah               | `man ls`                            |
+| `Ctrl + C`                     | Menghentikan proses                        | -                                   |
+| `Ctrl + L`                     | Membersihkan terminal                      | -                                   |
+| `Tab`                          | Auto-complete nama file/folder             | -                                   |
+| `Arrow Up`                     | Melihat perintah sebelumnya                | -                                   |
+| `Ctrl + A`                     | Pindah ke awal baris                       | -                                   |
+| `Ctrl + E`                     | Pindah ke akhir baris                      | -                                   |

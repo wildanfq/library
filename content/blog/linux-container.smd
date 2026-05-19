@@ -1,0 +1,261 @@
+---
+.title = "Linux Containers",
+.date = @date("2026-05-19T23:10:00"),
+.author = "Wildan Firmani Quraisi",
+.layout = "post.shtml",
+.draft = false,
+---
+
+Panduan ini membantu Anda memulai LXD. Anda akan menginstal, menginisialisasi, lalu menggunakan CLI (atau UI web) untuk bekerja dengan *instance* (container dan virtual machine). Anda juga belajar konfigurasi, snapshot, dan lainnya.
+
+---
+
+## 1. Persyaratan
+
+* Ruang kosong minimal **20 GiB** & Sistem **Linux** sudah terinstal
+
+---
+
+## 2. Instalasi LXD (via Snap)
+
+### 2.1 Cek ketersediaan Snap
+
+```bash
+snap version
+```
+
+Jika Snap tersedia, akan muncul informasi versi. Jika tidak, instal Snap terlebih dahulu dari [dokumentasi Snap](https://snapcraft.io/docs/installing-snapd).
+
+### 2.2 Install LXD
+
+```bash
+sudo snap install lxd
+```
+
+> **Catatan:** Tutorial ini membutuhkan LXD versi **5.21 atau lebih tinggi**.
+> Cek versi: `snap list lxd`
+> Jika versi lebih rendah, upgrade ke channel 5.21/stable.
+
+### 2.3 Tambahkan pengguna ke grup `lxd`
+
+**Peringatan:** Akses ke LXD via socket Unix memberikan akses penuh (setara root). Hanya berikan ke pengguna yang Anda percaya.
+
+```bash
+# Cek apakah sudah masuk grup lxd
+getent group lxd | grep "$USER"
+
+# Jika belum, tambahkan dan aktifkan grup baru
+sudo usermod -aG lxd "$USER"
+newgrp lxd
+```
+
+---
+
+## 3. Inisialisasi LXD (Minimal)
+
+```bash
+lxd init --minimal
+```
+
+Tidak ada pesan jika berhasil. Inisialisasi ini menyiapkan LXD dengan opsi default.
+
+---
+
+## 4. Konfirmasi Dukungan Virtualisasi (untuk VM)
+
+```bash
+lxc info | grep -FA2 'instance_types'
+```
+
+Jika muncul `virtual-machine`, sistem mendukung KVM → bisa pakai VM.
+Jika tidak, hanya bisa menggunakan container.
+
+---
+
+## 5. Opsional: Mengaktifkan UI LXD
+
+Setelah inisialisasi, Anda bisa menggunakan antarmuka grafis di browser:
+
+```bash
+lxd ui
+```
+
+Lalu buka `https://127.0.0.1:8443` (gunakan token yang muncul).
+
+---
+
+## 6. Membuat Instance (Container & VM)
+
+### 6.1 Buat dan jalankan container
+
+Perintah `lxc launch` membuat + langsung menjalankan instance.
+
+```bash
+lxc launch ubuntu:24.04 first
+```
+
+- `ubuntu:` = remote server default berisi image Ubuntu resmi
+- `first` = nama container
+
+### 6.2 Buat container tanpa menjalankan
+
+```bash
+lxc init ubuntu:24.04 second
+```
+
+### 6.3 Lihat daftar instance
+
+```bash
+lxc list
+```
+
+Output menunjukkan status: `first` RUNNING, `second` STOPPED.
+
+### 6.4 Buat dan jalankan VM (tambahkan flag `--vm`)
+
+```bash
+lxc launch ubuntu:24.04 ubuntu-vm --vm
+```
+
+### 6.5 Buat VM desktop (image dari `images:` remote)
+
+```bash
+lxc launch images:ubuntu/24.04/desktop ubuntu-desktop --vm --config limits.memory=4GiB
+```
+
+> Image besar, butuh waktu. Buka terminal lain untuk lanjut belajar.
+
+---
+
+## 7. Inspeksi Instance
+
+```bash
+lxc list                       # Info ringkas
+lxc info first                 # Info detail (arsitektur, PID, usage, dll)
+```
+
+---
+
+## 8. Menjalankan Instance yang Berhenti
+
+```bash
+lxc start second               # Menjalankan second container
+lxc list                       # Sekarang status RUNNING
+```
+
+---
+
+## 9. Konfigurasi Instance
+
+### 9.1 Ubah konfigurasi setelah instance dibuat
+
+Contoh: batasi CPU dan memory untuk container `second`
+
+```bash
+lxc config set second limits.cpu=1 limits.memory=192MiB
+```
+
+### 9.2 Lihat konfigurasi
+
+```bash
+lxc config get second limits.cpu
+lxc config get second limits.memory
+lxc config show second
+```
+
+---
+
+## 10. Membuka Shell Interaktif di Dalam Instance
+
+```bash
+lxc shell first                # Masuk sebagai root di container first
+free -m                        # Lihat memory
+nproc                          # Lihat jumlah CPU
+exit                           # Keluar dari shell instance
+```
+
+- Container `first` mewarisi semua resource host.
+- Container `second` hanya memiliki 1 CPU dan 192 MB memory (sesuai konfigurasi).
+
+### 10.1 Menjalankan satu perintah tanpa shell interaktif
+
+```bash
+lxc exec second -- free -m
+```
+
+---
+
+## 11. Akses File Antara Host dan Instance
+
+Contoh: buat file kosong di `first`, tarik ke host, isi, lalu dorong kembali.
+
+```bash
+lxc exec first -- touch helloworld.txt
+lxc file pull first/root/helloworld.txt .
+echo "Hello world" > helloworld.txt
+lxc file push helloworld.txt first/root/helloworld.txt
+lxc exec first -- cat helloworld.txt   # Output: Hello world!
+```
+
+---
+
+## 12. Backup & Restore dengan Snapshot
+
+### 12.1 Buat snapshot
+
+```bash
+lxc snapshot first clean        # Simpan state saat ini sebagai 'clean'
+lxc list first                  # Lihat kolom SNAPSHOTS
+lxc info first                  # Lihat detail snapshot di tabel bawah
+```
+
+### 12.2 Restore dari snapshot
+
+Contoh: "Rusak" container dengan menghapus `bash`, lalu pulihkan.
+
+```bash
+lxc exec first -- rm /usr/bin/bash   # Rusak
+lxc exec first -- bash               # Error
+lxc restore first clean              # Pulihkan
+lxc exec first -- bash               # Berhasil kembali
+exit
+```
+
+### 12.3 Hapus snapshot
+
+```bash
+lxc delete first/clean
+```
+
+---
+
+## 13. (Opsional) Hentikan dan Hapus Instance
+
+**Perhatian:** Menghapus instance bersifat permanen (termasuk semua snapshot).
+
+```bash
+lxc stop ubuntu-vm
+lxc delete ubuntu-vm
+
+lxc delete ubuntu-desktop --force    # Hapus tanpa stop dulu
+
+# Hapus first dan second juga jika ingin
+lxc delete first --force
+lxc delete second
+```
+
+---
+
+## 14. (Opsional) Tahan Update Snap (untuk produksi)
+
+Secara default, snap LXD update otomatis. Untuk lingkungan produksi, tahan update agar bisa dijadwalkan secara manual.
+
+```bash
+# Tahan update tanpa batas
+sudo snap refresh --hold lxd
+
+# Kembalikan update otomatis
+sudo snap refresh --unhold lxd
+```
+
+---

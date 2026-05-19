@@ -1,0 +1,381 @@
+---
+.title = "Virtual Private Network",
+.date = @date("2026-05-19T23:50:00"),
+.author = "Wildan Firmani Quraisi",
+.layout = "post.shtml",
+.draft = false,
+---
+
+Panduan teknis yang komprehensif untuk membangun terowongan (tunnel) VPN yang aman, privat, dan terenkripsi antara infrastruktur lokal (*on-premise* seperti server lokal atau laptop) dengan *Virtual Private Server* (VPS) yang berjalan di Google Cloud Compute Engine.
+
+---
+
+## 1. Konsep Dasar Arsitektur & Topologi
+
+Metodologi ini memanfaatkan WireGuard, sebuah protokol VPN modern berspesifikasi tinggi yang berjalan pada ruang kernel (*kernel-space*) untuk menghasilkan enkripsi berkecepatan tinggi dengan latensi rendah. Hubungan antar node di dalam WireGuard bersifat *Peer-to-Peer* (P2P), namun karena server lokal berada di balik *firewall* lokal/NAT, VPS Google Cloud yang memiliki IP publik statis bertindak sebagai titik hubung utama (*VPN Gateway/Server*) yang mendengarkan koneksi masuk.
+
+### Peran Perangkat dalam Jaringan
+
+* **Google Cloud VPS (VPN Server):** Memiliki IP Publik statis, bertindak sebagai jangkar (*anchor*) yang menerima inisiasi jabat tangan (*handshake*) dari klien.
+* **Server/Laptop Lokal (VPN Client):** Berada di jaringan internal (tanpa IP Publik), bertindak sebagai inisiator koneksi keluar (*outbound connection*) menuju VPS.
+* **WireGuard Tunnel:** Terowongan virtual terenkripsi menggunakan kriptografi modern (ChaCha20 dan Poly1305) sebagai media transportasi data privat.
+
+### Alokasi Pengalamatan Jaringan (Addressing)
+
+| Komponen | Antarmuka Jaringan (Interface) | Alamat IP Publik | Alamat IP WireGuard (Private) |
+| --- | --- | --- | --- |
+| **Google Cloud VPS** | `wg0` (Virtual) / `eth0` (Fisik) | `34.xx.xx.xx` (Statis GCP) | `10.10.10.1/24` |
+| **Server/Laptop Lokal** | `wg0` (Virtual) | Dinamis / Di balik NAT | `10.10.10.2/24` |
+
+---
+
+## 2. Prasyarat Sistem
+
+Sebelum memulai proses instalasi, pastikan kedua lingkungan sistem telah memenuhi spesifikasi minimum berikut:
+
+* **Google Cloud VPS:**
+* Menggunakan sistem operasi Ubuntu Server (versi 20.04 LTS atau yang lebih baru).
+* Memiliki satu IP Publik eksternal yang bersifat statis.
+* Memiliki akses administratif penuh (`sudo` privileges) melalui SSH.
+
+
+* **Server/Laptop Lokal:**
+* Menggunakan sistem operasi Ubuntu (Desktop atau Server).
+* Terhubung ke internet secara aktif dan stabil.
+* Memiliki akses administratif penuh (`sudo` privileges).
+
+
+
+---
+
+## 3. Instalasi Paket WireGuard
+
+Langkah pertama adalah melakukan instalasi modul *kernel* dan kakas kelola (*user-space tools*) WireGuard pada kedua mesin.
+
+### Langkah Instalasi di Google Cloud VPS
+
+1. Perbarui indeks paket repositori lokal dan tingkatkan versi paket sistem ke versi terbaru:
+```bash
+sudo apt update && sudo apt upgrade -y
+```
+
+
+2. Pasang paket utama WireGuard yang menyediakan utilitas `wg` dan `wg-quick`:
+
+```bash
+   sudo apt install wireguard -y
+```
+
+### Langkah Instalasi di Server/Laptop Lokal
+
+1. Perbarui indeks paket repositori lokal Anda:
+```bash
+sudo apt update
+```
+
+
+2. Pasang paket WireGuard pada mesin lokal:
+```bash
+sudo apt install wireguard -y
+```
+
+---
+
+## 4. Manajemen Kriptografi: Pembuatan Kunci (Keypairs)
+
+WireGuard menggunakan sistem kriptografi asimetris berbasis *kunci publik-privat* (Public-Private Keypairs) untuk melakukan otentikasi antar perangkat (*peers*). Setiap perangkat wajib memiliki kunci privatnya sendiri (yang harus dijaga kerahasiaannya) dan saling bertukar kunci publik agar dapat mengenali satu sama lain.
+
+### Pembuatan Kunci di Google Cloud VPS
+
+1. Masuk ke dalam direktori konfigurasi utama WireGuard:
+```bash
+cd /etc/wireguard
+```
+
+
+2. Atur *umask* sistem sementara waktu menjadi `077` agar berkas kunci yang dibuat secara otomatis hanya dapat dibaca oleh pengguna `root`:
+```bash
+umask 077
+```
+
+
+3. Buat kunci privat (*private key*) dan simpan ke dalam berkas bernama `privatekey`:
+
+```bash
+   wg genkey | sudo tee privatekey > /dev/null
+```
+
+4. Ekstrak kunci publik (*public key*) yang diturunkan secara matematis dari kunci privat tersebut, lalu simpan ke berkas `publickey`:
+
+```bash
+   sudo cat privatekey | wg pubkey | sudo tee publickey > /dev/null
+```
+
+### Pembuatan Kunci di Server/Laptop Lokal
+
+1. Masuk ke direktori konfigurasi WireGuard pada sistem lokal Anda:
+```bash
+cd /etc/wireguard
+```
+
+
+2. Atur tingkat keamanan folder dan buat kunci privat lokal:
+
+```bash
+   umask 077
+   wg genkey | sudo tee privatekey > /dev/null
+```
+
+3. Turunkan dan buat berkas kunci publik lokal:
+
+```bash
+   sudo cat privatekey | wg pubkey | sudo tee publickey > /dev/null
+```
+
+> **Catatan Penting:** Anda dapat melihat isi masing-masing kunci menggunakan perintah `sudo cat privatekey` atau `sudo cat publickey`. Catat atau salin nilai string acak tersebut karena akan digunakan pada langkah konfigurasi selanjutnya.
+
+---
+
+## 5. Konfigurasi Antarmuka WireGuard (Interface)
+
+Setelah pasangan kunci tersedia, Anda harus menyusun file konfigurasi berekstensi `.conf` yang menentukan alamat IP virtual, port jaringan yang didengarkan, dan parameter autentikasi peer.
+
+### Langkah Konfigurasi pada Google Cloud VPS
+
+1. Buat dan buka file konfigurasi baru bernama `wg0.conf` menggunakan teks editor:
+
+```bash
+   sudo nano /etc/wireguard/wg0.conf
+```
+
+2. Salin dan tempel struktur konfigurasi di bawah ini, pastikan Anda mengganti placeholder sesuai data kunci yang telah dibuat:
+
+```ini
+   [Interface]
+   Address = 10.10.10.1/24
+   ListenPort = 51820
+   PrivateKey = <ISI_DENGAN_PRIVATE_KEY_VPS_ANDA>
+
+   [Peer]
+   PublicKey = <ISI_DENGAN_PUBLIC_KEY_LAPTOP_LOKAL>
+   AllowedIPs = 10.10.10.2/32
+```
+
+#### Analisis Parameter Konfigurasi VPS:
+
+* **`[Interface]`**: Menandakan blok pengaturan untuk kartu jaringan virtual lokal milik VPS sendiri.
+* **`Address`**: Menetapkan alamat IP `10.10.10.1` dengan subnet mask `/24` ke dalam *tunnel interface*.
+* **`ListenPort`**: Menentukan port UDP khusus (default: `51820`) yang akan dibuka oleh VPS untuk mendengarkan paket masuk dari internet.
+* **`PrivateKey`**: Kunci privat milik VPS yang berfungsi sebagai identitas rahasia enkripsi server.
+* **`[Peer]`**: Menandakan blok pengaturan untuk perangkat luar yang diizinkan terhubung (dalam hal ini Server/Laptop Lokal).
+* **`PublicKey`**: Kunci publik milik Laptop Lokal sebagai verifikasi identitas kriptografi kawan bicara.
+* **`AllowedIPs`**: Menentukan bahwa hanya lalu lintas dengan alamat IP asal/tujuan `10.10.10.2` (notasi `/32` berarti tepat satu IP spesifik) yang diizinkan melewati terowongan ini dari peer tersebut.
+
+---
+
+### Langkah Konfigurasi pada Server/Laptop Lokal
+
+1. Buat berkas konfigurasi `wg0.conf` pada mesin lokal:
+
+```bash
+   sudo nano /etc/wireguard/wg0.conf
+```
+
+2. Masukkan parameter konfigurasi berikut, sesuaikan variabel IP Publik dan kunci dengan kondisi riil Anda:
+
+```ini
+   [Interface]
+   Address = 10.10.10.2/24
+   PrivateKey = <ISI_DENGAN_PRIVATE_KEY_LAPTOP_LOKAL>
+
+   [Peer]
+   PublicKey = <ISI_DENGAN_PUBLIC_KEY_VPS_ANDA>
+   Endpoint = <IP_PUBLIK_GCP_VPS_ANDA>:51820
+   AllowedIPs = 10.10.10.0/24
+   PersistentKeepalive = 25
+```
+
+#### Analisis Parameter Konfigurasi Lokal:
+
+* **`Address`**: Alamat IP virtual unik untuk mesin lokal di dalam jaringan internal VPN.
+* **`Endpoint`**: Alamat IP publik fisik dari Google Cloud VPS diikuti dengan tanda titik dua dan nomor port UDP tempat WireGuard server mendengarkan.
+* **`AllowedIPs`**: Menandakan rentang alokasi IP (`10.10.10.0/24`) yang akan dirutekan melalui jalur VPN ini. Semua paket menuju subnet tersebut akan otomatis dimasukkan ke dalam enkripsi terowongan.
+* **`PersistentKeepalive`**: Berfungsi mengirimkan paket kosong (ping kosong) setiap 25 detik sekali. Fitur ini sangat krusial bagi perangkat lokal di balik NAT/Router agar koneksi *stateful firewall* pada router lokal tidak memutus sesi UDP akibat dianggap pasif (*idle timeout*). Dengan ini, VPS selalu tahu jalur balik menuju perangkat lokal Anda.
+
+---
+
+## 6. Pengamanan Berkas Konfigurasi (File Permissions)
+
+Berkas konfigurasi WireGuard menyimpan string kunci privat (`PrivateKey`) yang memiliki hak akses penuh terhadap dekripsi data jaringan Anda. Oleh karena itu, sistem operasi wajib dikonfigurasi untuk membatasi hak akses file tersebut agar tidak dapat diintip oleh pengguna tidak sah (*unprivileged users*).
+
+### Mengatur Hak Akses File
+
+1. Jalankan perintah perubahan mode (*change mode*) berikut di **kedua perangkat** (VPS dan Mesin Lokal):
+
+```bash
+   sudo chmod 600 /etc/wireguard/wg0.conf
+```
+
+> **Penjelasan Teknis:** Aturan `600` (`-rw-------`) memastikan bahwa hanya pemilik berkas asli (yaitu akun `root`) yang memiliki hak akses penuh untuk membaca (*read*) dan menulis (*write*) isi berkas, sedangkan pengguna lain di dalam sistem sama sekali tidak memiliki akses baca.
+
+---
+
+## 7. Konfigurasi Firewall Google Cloud Platform (GCP)
+
+Secara bawaan (*default*), Google Cloud Platform menerapkan kebijakan keamanan ketat yang memblokir seluruh lalu lintas masuk (*ingress traffic*) ke instans Compute Engine. Anda harus membuat aturan firewall (*Firewall Rule*) kustom agar paket UDP WireGuard dapat menembus sistem keamanan jaringan GCP.
+
+### Langkah Membuka Port Jaringan di GCP Console
+
+1. Buka peramban (*browser*) Anda dan masuk ke halaman **Google Cloud Console**.
+2. Navigasikan menu navigasi kiri menuju **VPC Network** $\rightarrow$ **Firewall**.
+3. Klik tombol **Create Firewall Rule** di bilah atas halaman.
+4. Isi parameter konfigurasi aturan baru dengan ketentuan teknis berikut:
+* **Name:** `allow-wireguard-ingress`
+* **Direction of traffic:** `Ingress` (Lalu lintas masuk)
+* **Action on match:** `Allow` (Izinkan)
+* **Targets:** `All instances in the network` (Atau sesuaikan dengan target tag network VPS Anda)
+* **Source filter:** `IPv4 ranges`
+* **Source IPv4 ranges:** `0.0.0.0/0` (Mengizinkan koneksi dari IP internet mana pun, mengingat IP internet lokal Anda bersifat dinamis)
+* **Protocols and ports:** Centang **Specified protocols and ports**, pilih **UDP**, lalu masukkan nilai port `51820`.
+
+
+5. Klik **Create** untuk menyimpan dan menerapkan aturan baru ke jaringan virtual Anda.
+
+---
+
+## 8. Manajemen Layanan dan Otomatisasi (Execution)
+
+WireGuard menyediakan integrasi penuh ke dalam pengelola sistem `systemd`. Langkah ini digunakan untuk mengaktifkan terowongan VPN serta memastikan layanan otomatis berjalan kembali apabila server melakukan muat ulang (*reboot*).
+
+### Eksekusi Perintah pada Google Cloud VPS
+
+1. Daftarkan layanan WireGuard agar otomatis aktif saat sistem dinyalakan:
+
+```bash
+   sudo systemctl enable wg-quick@wg0
+```
+
+2. Jalankan antarmuka virtual `wg0` untuk pertama kalinya:
+
+```bash
+   sudo systemctl start wg-quick@wg0
+```
+
+### Eksekusi Perintah pada Server/Laptop Lokal
+
+1. Daftarkan layanan jaringan pada sistem lokal Anda:
+
+```bash
+   sudo systemctl enable wg-quick@wg0
+```
+
+2. Hidupkan jaringan VPN lokal untuk memulai inisiasi jabat tangan ke cloud:
+
+```bash
+   sudo systemctl start wg-quick@wg0
+```
+
+---
+
+## 9. Verifikasi dan Pengujian Jaringan
+
+Setelah kedua layanan aktif, langkah validasi wajib dilakukan untuk memastikan bahwa enkripsi asimetris berhasil terotentikasi dan jalur *routing* privat telah terbentuk sempurna.
+
+### Memeriksa Status Internal WireGuard
+
+1. Jalankan utilitas pemeriksaan internal WireGuard di salah satu mesin:
+```bash
+sudo wg
+```
+
+
+2. Analisis baris keluaran yang muncul di layar terminal Anda. Jaringan dinyatakan **berhasil terbentuk** apabila menampilkan data riil berikut:
+
+```
+   interface: wg0
+     public key: vPsPuBlIcKeY...
+     private key: (hidden)
+     listening port: 51820
+
+   peer: LoCaLpUbLiCKeY...
+     endpoint: 182.xx.xx.xx:port_lokal
+     allowed ips: 10.10.10.2/32
+     latest handshake: 14 seconds ago
+     transfer: 4.12 KiB received, 3.84 KiB sent
+```
+
+> **Indikator Kunci Keberhasilan:** Keberadaan baris `latest handshake` (menunjukkan waktu kurang dari 2 menit) serta pertumbuhan angka pada bagian `transfer: received / sent` adalah bukti absolut bahwa paket terenkripsi berhasil didekripsi dan dikenali oleh kedua belah pihak.
+
+### Uji Konektivitas Ping (ICMP Test)
+
+1. Lakukan uji respons dari **Server/Laptop Lokal menuju VPS**:
+
+```bash
+   ping -c 4 10.10.10.1
+```
+
+2. Lakukan uji respons sebaliknya, dari **VPS menuju Server/Laptop Lokal**:
+
+```bash
+   ping -c 4 10.10.10.2
+```
+
+---
+
+## 10. Penanganan Masalah (Troubleshooting) Real-Case
+
+Kendala paling umum yang sering ditemukan di lapangan adalah situasi di mana perintah `ping` menghasilkan *timeout* dan baris `latest handshake` tidak pernah muncul saat mengetik perintah `sudo wg`. Berikut adalah diagnosis dan solusi penyelesaian masalah tersebut berdasarkan arsitektur WireGuard:
+
+### Masalah 1: Jabat Tangan (*Handshake*) Gagal Terbentuk
+
+* **Penyebab Utama:** Ketidakcocokan string kunci (*mismatched keys*). Karakter kunci publik milik Laptop yang ditempel pada berkas konfigurasi VPS berbeda (meski hanya satu karakter) dengan kunci publik asli yang digenerasikan oleh Laptop, atau sebaliknya.
+* **Solusi Pemecahan:**
+1. Jalankan `sudo cat /etc/wireguard/publickey` di Laptop, salin hasilnya secara teliti.
+2. Buka `/etc/wireguard/wg0.conf` di VPS, pastikan parameter `PublicKey` pada blok `[Peer]` sama persis dengan string tersebut.
+3. Lakukan restart layanan di kedua sisi menggunakan perintah `sudo systemctl restart wg-quick@wg0`.
+
+
+
+### Masalah 2: Handshake Sukses, tetapi Ping Tetap Timeout
+
+* **Penyebab Utama:** Blokade dari sub-sistem firewall lokal (`ufw` atau `iptables`) pada salah satu mesin yang melarang lalu lintas protokol ICMP.
+* **Solusi Pemecahan:** Pastikan aturan firewall lokal mengizinkan paket dari subnet VPN dengan mendaftarkannya secara eksplisit:
+
+```bash
+  sudo ufw allow from 10.10.10.0/24
+```
+
+---
+
+## 11. Manajemen Perintah Operasional Kontinuitas
+
+Berikut adalah rangkuman perintah administratif penting menggunakan `systemd` untuk kebutuhan pemeliharaan operasional terowongan VPN WireGuard sehari-hari:
+
+* **Melihat Status Operasional Jaringan & Handshake:**
+```bash
+sudo wg
+```
+
+
+* **Memeriksa Status Siklus Hidup (Lifecycle) Service:**
+
+```bash
+  sudo systemctl status wg-quick@wg0
+```
+
+* **Mematikan Jalur Terowongan VPN Sementara:**
+
+```bash
+  sudo systemctl stop wg-quick@wg0
+```
+
+* **Menghidupkan Jalur Terowongan VPN Kembali:**
+
+```bash
+  sudo systemctl start wg-quick@wg0
+```
+
+* **Menerapkan Ulang Konfigurasi (Reload/Restart):**
+```bash
+sudo systemctl restart wg-quick@wg0
+```

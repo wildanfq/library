@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="id">
+	<head id="head">
+		<meta charset="utf-8">
+		<meta name="viewport" content="initial-scale=1">
+		<title>My Home</title>
+		<link type="text/css" rel="stylesheet" href="/style.css">
+		<link type="text/css" rel="stylesheet" href="/highlight.css">
+		
+	<style>
+		#prev-next {
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			margin-top: 40px;
+		}
+		
+		figure {
+			align-self: center;
+			text-align: center;
+			font-style: italic;
+		}
+		
+		.post {
+			display:flex;
+			flex-direction: column;
+		}
+	</style>
+
+	</head>
+	<body id="body">
+		<header class="site-header">
+			<nav class="top-nav">
+				<a class="nav-link" href="/">Home</a>
+				<a class="nav-link" href="/blog/">Blog</a>
+				<a class="nav-link" href="/about/">About</a>
+			</nav>
+		</header>
+
+		
+	<h1>Linux Containers</h1>
+	<div class="post"><p>Panduan ini membantu Anda memulai LXD. Anda akan menginstal, menginisialisasi, lalu menggunakan CLI (atau UI web) untuk bekerja dengan <em>instance</em> (container dan virtual machine). Anda juga belajar konfigurasi, snapshot, dan lainnya.</p><hr><h2>1. Persyaratan</h2><ul><li>Ruang kosong minimal <strong>20 GiB</strong> & Sistem <strong>Linux</strong> sudah terinstal</li></ul><hr><h2>2. Instalasi LXD (via Snap)</h2><h3>2.1 Cek ketersediaan Snap</h3><pre><code class="bash"><span class="constant function">snap</span> <span class="constant">version</span>
+</code></pre>
+<p>Jika Snap tersedia, akan muncul informasi versi. Jika tidak, instal Snap terlebih dahulu dari <a href="https://snapcraft.io/docs/installing-snapd" target="_blank">dokumentasi Snap</a>.</p><h3>2.2 Install LXD</h3><pre><code class="bash"><span class="constant function">sudo</span> <span class="constant">snap</span> <span class="constant">install</span> <span class="constant">lxd</span>
+</code></pre>
+<blockquote><p><strong>Catatan:</strong> Tutorial ini membutuhkan LXD versi <strong>5.21 atau lebih tinggi</strong>. Cek versi: <code>snap list lxd</code> Jika versi lebih rendah, upgrade ke channel 5.21/stable.</p></blockquote><h3>2.3 Tambahkan pengguna ke grup <code>lxd</code></h3><p><strong>Peringatan:</strong> Akses ke LXD via socket Unix memberikan akses penuh (setara root). Hanya berikan ke pengguna yang Anda percaya.</p><pre><code class="bash"><span class="comment"># Cek apakah sudah masuk grup lxd</span>
+<span class="constant function">getent</span> <span class="constant">group</span> <span class="constant">lxd</span> <span class="operator">|</span> <span class="constant function">grep</span> <span class="string constant">&quot;</span><span class="string constant operator">$</span><span class="string constant property">USER</span><span class="string constant">&quot;</span>
+
+<span class="comment"># Jika belum, tambahkan dan aktifkan grup baru</span>
+<span class="constant function">sudo</span> <span class="constant">usermod</span> <span class="constant">-aG</span> <span class="constant">lxd</span> <span class="string constant">&quot;</span><span class="string constant operator">$</span><span class="string constant property">USER</span><span class="string constant">&quot;</span>
+<span class="constant function">newgrp</span> <span class="constant">lxd</span>
+</code></pre>
+<hr><h2>3. Inisialisasi LXD (Minimal)</h2><pre><code class="bash"><span class="constant function">lxd</span> <span class="constant">init</span> <span class="constant">--minimal</span>
+</code></pre>
+<p>Tidak ada pesan jika berhasil. Inisialisasi ini menyiapkan LXD dengan opsi default.</p><hr><h2>4. Konfirmasi Dukungan Virtualisasi (untuk VM)</h2><pre><code class="bash"><span class="constant function">lxc</span> <span class="constant">info</span> <span class="operator">|</span> <span class="constant function">grep</span> <span class="constant">-FA2</span> <span class="string constant">&apos;instance_types&apos;</span>
+</code></pre>
+<p>Jika muncul <code>virtual-machine</code>, sistem mendukung KVM → bisa pakai VM. Jika tidak, hanya bisa menggunakan container.</p><hr><h2>5. Opsional: Mengaktifkan UI LXD</h2><p>Setelah inisialisasi, Anda bisa menggunakan antarmuka grafis di browser:</p><pre><code class="bash"><span class="constant function">lxd</span> <span class="constant">ui</span>
+</code></pre>
+<p>Lalu buka <code>https://127.0.0.1:8443</code> (gunakan token yang muncul).</p><hr><h2>6. Membuat Instance (Container & VM)</h2><h3>6.1 Buat dan jalankan container</h3><p>Perintah <code>lxc launch</code> membuat + langsung menjalankan instance.</p><pre><code class="bash"><span class="constant function">lxc</span> <span class="constant">launch</span> <span class="constant">ubuntu:24.04</span> <span class="constant">first</span>
+</code></pre>
+<ul><li><code>ubuntu:</code> = remote server default berisi image Ubuntu resmi</li><li><code>first</code> = nama container</li></ul><h3>6.2 Buat container tanpa menjalankan</h3><pre><code class="bash"><span class="constant function">lxc</span> <span class="constant">init</span> <span class="constant">ubuntu:24.04</span> <span class="constant">second</span>
+</code></pre>
+<h3>6.3 Lihat daftar instance</h3><pre><code class="bash"><span class="constant function">lxc</span> <span class="constant">list</span>
+</code></pre>
+<p>Output menunjukkan status: <code>first</code> RUNNING, <code>second</code> STOPPED.</p><h3>6.4 Buat dan jalankan VM (tambahkan flag <code>--vm</code>)</h3><pre><code class="bash"><span class="constant function">lxc</span> <span class="constant">launch</span> <span class="constant">ubuntu:24.04</span> <span class="constant">ubuntu-vm</span> <span class="constant">--vm</span>
+</code></pre>
+<h3>6.5 Buat VM desktop (image dari <code>images:</code> remote)</h3><pre><code class="bash"><span class="constant function">lxc</span> <span class="constant">launch</span> <span class="constant">images:ubuntu/24.04/desktop</span> <span class="constant">ubuntu-desktop</span> <span class="constant">--vm</span> <span class="constant">--config</span> <span class="constant">limits.memory=4GiB</span>
+</code></pre>
+<blockquote><p>Image besar, butuh waktu. Buka terminal lain untuk lanjut belajar.</p></blockquote><hr><h2>7. Inspeksi Instance</h2><pre><code class="bash"><span class="constant function">lxc</span> <span class="constant">list</span>                       <span class="comment"># Info ringkas</span>
+<span class="constant function">lxc</span> <span class="constant">info</span> <span class="constant">first</span>                 <span class="comment"># Info detail (arsitektur, PID, usage, dll)</span>
+</code></pre>
+<hr><h2>8. Menjalankan Instance yang Berhenti</h2><pre><code class="bash"><span class="constant function">lxc</span> <span class="constant">start</span> <span class="constant">second</span>               <span class="comment"># Menjalankan second container</span>
+<span class="constant function">lxc</span> <span class="constant">list</span>                       <span class="comment"># Sekarang status RUNNING</span>
+</code></pre>
+<hr><h2>9. Konfigurasi Instance</h2><h3>9.1 Ubah konfigurasi setelah instance dibuat</h3><p>Contoh: batasi CPU dan memory untuk container <code>second</code></p><pre><code class="bash"><span class="constant function">lxc</span> <span class="constant">config</span> <span class="constant">set</span> <span class="constant">second</span> <span class="constant">limits.cpu=1</span> <span class="constant">limits.memory=192MiB</span>
+</code></pre>
+<h3>9.2 Lihat konfigurasi</h3><pre><code class="bash"><span class="constant function">lxc</span> <span class="constant">config</span> <span class="constant">get</span> <span class="constant">second</span> <span class="constant">limits.cpu</span>
+<span class="constant function">lxc</span> <span class="constant">config</span> <span class="constant">get</span> <span class="constant">second</span> <span class="constant">limits.memory</span>
+<span class="constant function">lxc</span> <span class="constant">config</span> <span class="constant">show</span> <span class="constant">second</span>
+</code></pre>
+<hr><h2>10. Membuka Shell Interaktif di Dalam Instance</h2><pre><code class="bash"><span class="constant function">lxc</span> <span class="constant">shell</span> <span class="constant">first</span>                <span class="comment"># Masuk sebagai root di container first</span>
+<span class="constant function">free</span> <span class="constant">-m</span>                        <span class="comment"># Lihat memory</span>
+<span class="constant function">nproc</span>                          <span class="comment"># Lihat jumlah CPU</span>
+<span class="constant function">exit</span>                           <span class="comment"># Keluar dari shell instance</span>
+</code></pre>
+<ul><li>Container <code>first</code> mewarisi semua resource host.</li><li>Container <code>second</code> hanya memiliki 1 CPU dan 192 MB memory (sesuai konfigurasi).</li></ul><h3>10.1 Menjalankan satu perintah tanpa shell interaktif</h3><pre><code class="bash"><span class="constant function">lxc</span> <span class="constant">exec</span> <span class="constant">second</span> <span class="constant">--</span> <span class="constant">free</span> <span class="constant">-m</span>
+</code></pre>
+<hr><h2>11. Akses File Antara Host dan Instance</h2><p>Contoh: buat file kosong di <code>first</code>, tarik ke host, isi, lalu dorong kembali.</p><pre><code class="bash"><span class="constant function">lxc</span> <span class="constant">exec</span> <span class="constant">first</span> <span class="constant">--</span> <span class="constant">touch</span> <span class="constant">helloworld.txt</span>
+<span class="constant function">lxc</span> <span class="constant">file</span> <span class="constant">pull</span> <span class="constant">first/root/helloworld.txt</span> <span class="constant">.</span>
+<span class="constant function">echo</span> <span class="string constant">&quot;Hello world&quot;</span> <span class="operator">&gt;</span> helloworld.txt
+<span class="constant function">lxc</span> <span class="constant">file</span> <span class="constant">push</span> <span class="constant">helloworld.txt</span> <span class="constant">first/root/helloworld.txt</span>
+<span class="constant function">lxc</span> <span class="constant">exec</span> <span class="constant">first</span> <span class="constant">--</span> <span class="constant">cat</span> <span class="constant">helloworld.txt</span>   <span class="comment"># Output: Hello world!</span>
+</code></pre>
+<hr><h2>12. Backup & Restore dengan Snapshot</h2><h3>12.1 Buat snapshot</h3><pre><code class="bash"><span class="constant function">lxc</span> <span class="constant">snapshot</span> <span class="constant">first</span> <span class="constant">clean</span>        <span class="comment"># Simpan state saat ini sebagai &apos;clean&apos;</span>
+<span class="constant function">lxc</span> <span class="constant">list</span> <span class="constant">first</span>                  <span class="comment"># Lihat kolom SNAPSHOTS</span>
+<span class="constant function">lxc</span> <span class="constant">info</span> <span class="constant">first</span>                  <span class="comment"># Lihat detail snapshot di tabel bawah</span>
+</code></pre>
+<h3>12.2 Restore dari snapshot</h3><p>Contoh: “Rusak” container dengan menghapus <code>bash</code>, lalu pulihkan.</p><pre><code class="bash"><span class="constant function">lxc</span> <span class="constant">exec</span> <span class="constant">first</span> <span class="constant">--</span> <span class="constant">rm</span> <span class="constant">/usr/bin/bash</span>   <span class="comment"># Rusak</span>
+<span class="constant function">lxc</span> <span class="constant">exec</span> <span class="constant">first</span> <span class="constant">--</span> <span class="constant">bash</span>               <span class="comment"># Error</span>
+<span class="constant function">lxc</span> <span class="constant">restore</span> <span class="constant">first</span> <span class="constant">clean</span>              <span class="comment"># Pulihkan</span>
+<span class="constant function">lxc</span> <span class="constant">exec</span> <span class="constant">first</span> <span class="constant">--</span> <span class="constant">bash</span>               <span class="comment"># Berhasil kembali</span>
+<span class="constant function">exit</span>
+</code></pre>
+<h3>12.3 Hapus snapshot</h3><pre><code class="bash"><span class="constant function">lxc</span> <span class="constant">delete</span> <span class="constant">first/clean</span>
+</code></pre>
+<hr><h2>13. (Opsional) Hentikan dan Hapus Instance</h2><p><strong>Perhatian:</strong> Menghapus instance bersifat permanen (termasuk semua snapshot).</p><pre><code class="bash"><span class="constant function">lxc</span> <span class="constant">stop</span> <span class="constant">ubuntu-vm</span>
+<span class="constant function">lxc</span> <span class="constant">delete</span> <span class="constant">ubuntu-vm</span>
+
+<span class="constant function">lxc</span> <span class="constant">delete</span> <span class="constant">ubuntu-desktop</span> <span class="constant">--force</span>    <span class="comment"># Hapus tanpa stop dulu</span>
+
+<span class="comment"># Hapus first dan second juga jika ingin</span>
+<span class="constant function">lxc</span> <span class="constant">delete</span> <span class="constant">first</span> <span class="constant">--force</span>
+<span class="constant function">lxc</span> <span class="constant">delete</span> <span class="constant">second</span>
+</code></pre>
+<hr><h2>14. (Opsional) Tahan Update Snap (untuk produksi)</h2><p>Secara default, snap LXD update otomatis. Untuk lingkungan produksi, tahan update agar bisa dijadwalkan secara manual.</p><pre><code class="bash"><span class="comment"># Tahan update tanpa batas</span>
+<span class="constant function">sudo</span> <span class="constant">snap</span> <span class="constant">refresh</span> <span class="constant">--hold</span> <span class="constant">lxd</span>
+
+<span class="comment"># Kembalikan update otomatis</span>
+<span class="constant function">sudo</span> <span class="constant">snap</span> <span class="constant">refresh</span> <span class="constant">--unhold</span> <span class="constant">lxd</span>
+</code></pre>
+<hr></div>
+	<div id="prev-next">
+		<div></div>
+		<div>
+			<a href="/blog/command-line-interface/">
+				<span>Command Line Interface</span>
+				→
+			</a>
+		</div>
+	</div>
+
+
+		<footer class="site-footer">
+			<span class="footer-credit">© 2026</span>
+		</footer>
+	</body>
+</html>

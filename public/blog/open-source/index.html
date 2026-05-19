@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="id">
+	<head id="head">
+		<meta charset="utf-8">
+		<meta name="viewport" content="initial-scale=1">
+		<title>My Home</title>
+		<link type="text/css" rel="stylesheet" href="/style.css">
+		<link type="text/css" rel="stylesheet" href="/highlight.css">
+		
+	<style>
+		#prev-next {
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			margin-top: 40px;
+		}
+		
+		figure {
+			align-self: center;
+			text-align: center;
+			font-style: italic;
+		}
+		
+		.post {
+			display:flex;
+			flex-direction: column;
+		}
+	</style>
+
+	</head>
+	<body id="body">
+		<header class="site-header">
+			<nav class="top-nav">
+				<a class="nav-link" href="/">Home</a>
+				<a class="nav-link" href="/blog/">Blog</a>
+				<a class="nav-link" href="/about/">About</a>
+			</nav>
+		</header>
+
+		
+	<h1>Open Source</h1>
+	<div class="post"><p>Panduan bagi kreator (pemilik proyek) dalam menyiapkan fondasi repositori, dan instruksi bagi kontributor yang ingin berpartisipasi dalam pengembangan proyek open source.</p><h2>1. Panduan untuk Kreator (Pembuat Proyek)</h2><p>Sebagai pemilik proyek, langkah pertama yang harus Anda lakukan adalah membangun fondasi repositori yang ramah, informatif, dan aman. Saat membuat repositori baru di GitHub, pastikan repositori tersebut tidak dibiarkan kosong. Anda wajib menyiapkan beberapa file krusial di dalam folder utama (root folder) agar proyek terlihat profesional dan mudah dipahami oleh calon kontributor.</p><p><strong>Menyiapkan Wajah Proyek (README.md)</strong> File <code>README.md</code> adalah halaman pertama yang akan dilihat oleh pengunjung repositori Anda. Sebuah README yang baik harus mampu menjawab beberapa pertanyaan mendasar secara jelas. Anda perlu mendeskripsikan apa proyek ini dan masalah apa yang berusaha dipecahkan. Jelaskan juga latar belakang atau alasan mengapa panduan belajar Zig ini dibuat. Selain itu, berikan instruksi teknis mengenai bagaimana cara melakukan instalasi dan menjalankan Hugo Book secara lokal di komputer pengguna. Untuk menambah daya tarik, sangat disarankan untuk menyisipkan tangkapan layar (screenshot) atau demo visual dari tampilan panduan belajar tersebut.</p><p><strong>Menentukan Lisensi Hukum (LICENSE)</strong> Kehadiran file <code>LICENSE</code> sangat krusial karena tanpa lisensi, kode Anda secara otomatis dilindungi hak cipta penuh yang melarang orang lain untuk menyalin atau memodifikasinya. Anda dapat memilih lisensi populer yang sesuai dengan visi proyek. Jika Anda ingin memberikan kebebasan penuh, lisensi <strong>MIT</strong> sangat disarankan karena mengizinkan orang lain untuk menggunakan, mengubah, dan menjual kode Anda, dengan syarat mereka tetap mencantumkan nama Anda. Alternatif lain adalah <strong>Apache 2.0</strong> yang mirip dengan MIT namun memberikan perlindungan tambahan terkait hak paten. Namun, jika Anda ingin memastikan bahwa setiap modifikasi dari proyek ini juga harus dibuka untuk publik (konsep copyleft), maka lisensi <strong>GPLv3</strong> adalah pilihan yang tepat.</p><p><strong>Menyusun Buku Peraturan Kontributor (CONTRIBUTING.md & CODE_OF_CONDUCT.md)</strong> Agar kolaborasi berjalan lancar, Anda membutuhkan file <code>CONTRIBUTING.md</code> yang berfungsi sebagai buku panduan bagi siapa saja yang ingin membantu. Di dalam file ini, jelaskan secara mendetail cara mengatur lingkungan pengembangan (development environment) Hugo Book di komputer mereka, standar penulisan kode atau konten (coding style guide), serta tata cara pembuatan Issue dan Pull Request (PR). Selain itu, tambahkan file <code>CODE_OF_CONDUCT.md</code> untuk menjaga agar komunitas tetap sehat, inklusif, dan bebas dari perilaku beracun (toxic). Anda dapat memanfaatkan template standar yang disediakan oleh GitHub, seperti Contributor Covenant, saat pertama kali menginisiasi repositori.</p><p><strong>Menjaga Kebersihan dan Struktur Repositori (.gitignore & .github)</strong> Pastikan Anda memiliki file <code>.gitignore</code> untuk mencegah file sampah, folder sistem, atau file rahasia (seperti <code>.env</code>) ikut terunggah ke repositori publik. Selanjutnya, buatlah struktur folder <code>.github/ISSUE_TEMPLATE/</code>. Fitur ini memungkinkan Anda untuk membuat formulir khusus yang harus diisi oleh pengguna setiap kali mereka membuat <em>Issue</em> baru, misalnya formulir khusus untuk pelaporan <em>bug</em> atau permintaan fitur baru. Pendekatan ini sangat efektif untuk mencegah masuknya laporan yang tidak terstruktur atau tidak jelas.</p><p><strong>Pengaturan Keamanan dan Label Repositori (GitHub Settings)</strong> Sebelum proyek dipublikasikan secara luas, Anda harus mengubah beberapa pengaturan di tab <em>Settings</em> repositori. Masuklah ke menu <em>Branches</em> dan tambahkan aturan perlindungan (Branch protection rule) untuk <em>branch</em> utama Anda (biasanya bernama <code>main</code> atau <code>master</code>). Aktifkan opsi “Require a pull request before merging”. Pengaturan ini memastikan bahwa tidak ada seorang pun, termasuk Anda sendiri, yang bisa langsung memasukkan (push) kode yang berpotensi merusak ke dalam <em>branch</em> utama tanpa melalui proses peninjauan terlebih dahulu. Terakhir, buatlah label standar di menu <em>Issues</em>, seperti <code>good first issue</code> untuk tugas ringan bagi kontributor pemula, atau <code>help wanted</code> untuk fitur yang membutuhkan bantuan khusus. Label-label ini akan berfungsi sebagai magnet penarik bagi para kontributor di ekosistem GitHub.</p><hr><h2>2. Panduan untuk Kontributor</h2><p>Bagian ini menjelaskan alur kerja (workflow) bagi siapa saja—baik orang asing maupun rekan kerja—yang ingin berkontribusi pada proyek panduan belajar Zig ini. Proyek open source standar umumnya menggunakan metode <em>Forking Workflow</em>. Berikut adalah tahapan yang harus dilalui kontributor, mulai dari menemukan tugas hingga kode mereka resmi digabungkan ke dalam proyek.</p><p><strong>Mencari Issue dan Melakukan Forking</strong> Langkah pertama bagi seorang kontributor adalah melihat daftar <em>Issue</em> yang tersedia di repositori utama. Ketika menemukan tugas yang diminati, kontributor harus meninggalkan komentar untuk meminta izin mengerjakan <em>issue</em> tersebut (misalnya, “Saya ingin mengerjakan bagian ini, bisakah ditugaskan kepada saya?”). Setelah kreator menyetujui dan menugaskannya, kontributor tidak bisa langsung mengubah kode di repositori utama. Mereka harus menekan tombol <strong>Fork</strong> yang terletak di pojok kanan atas halaman GitHub. Proses ini akan menciptakan salinan identik dari repositori proyek utama ke dalam akun GitHub pribadi kontributor.</p><p><strong>Melakukan Clone dan Membuat Branch Baru</strong> Setelah memiliki salinan repositori (hasil <em>fork</em>), kontributor harus mengunduhnya ke komputer lokal menggunakan perintah <em>clone</em>. Setelah proyek berada di komputer lokal, sangat diwajibkan bagi kontributor untuk membuat <em>branch</em> baru yang spesifik untuk fitur atau perbaikan yang akan dikerjakan. Hal ini dilakukan untuk menjaga agar <em>branch</em> utama tetap bersih dan terisolasi dari perubahan yang sedang dikembangkan. Perintah yang digunakan di terminal biasanya adalah:</p><pre><code class="bash"><span class="constant function">git</span> <span class="constant">checkout</span> <span class="constant">-b</span> <span class="constant">nama-fitur-yang-dikerjakan</span>
+</code></pre>
+<p><strong>Proses Coding, Push, dan Pembuatan Pull Request (PR)</strong> Di dalam <em>branch</em> baru inilah kontributor menulis kode, memperbaiki konten Hugo Book, atau menambahkan panduan materi Zig. Setelah pekerjaan selesai dan di-commit secara lokal, kontributor harus mengunggah (push) <em>branch</em> tersebut kembali ke repositori hasil <em>fork</em> di akun GitHub mereka sendiri. Selanjutnya, kontributor kembali ke halaman repositori utama milik kreator. Di sana, akan muncul tombol “Compare & pull request”. Kontributor harus mengisi formulir PR dengan penjelasan mendetail mengenai perubahan apa saja yang telah dilakukan. Sangat disarankan untuk menyebutkan nomor <em>issue</em> yang diselesaikan, misalnya dengan menuliskan <code>Closes #12</code>. Kata kunci ini akan membuat GitHub secara otomatis menutup <em>issue</em> nomor 12 ketika PR tersebut berhasil digabungkan.</p><p><strong>Proses Review dan Penggabungan (Merge)</strong> Tahap terakhir berada di tangan Anda sebagai <em>maintainer</em> atau pemilik proyek. Anda akan menerima notifikasi bahwa ada <em>Pull Request</em> baru yang masuk. Tugas Anda adalah memeriksa baris demi baris perubahan yang diajukan. Jika masih ada kekurangan, Anda dapat meninggalkan komentar langsung pada baris kode yang spesifik untuk meminta perbaikan (revision) dari kontributor. Namun, jika pekerjaan tersebut sudah sempurna dan sesuai dengan standar proyek, Anda hanya perlu menekan tombol <strong>Merge pull request</strong>. Dengan langkah tersebut, kontribusi mereka telah resmi menjadi bagian dari proyek panduan belajar bahasa pemrograman Zig Anda!</p></div>
+	<div id="prev-next">
+		<div>
+			<a href="/blog/virtual-private-network/">
+				←
+				<span>Virtual Private Network</span>
+			</a>
+		</div>
+		<div></div>
+	</div>
+
+
+		<footer class="site-footer">
+			<span class="footer-credit">© 2026</span>
+		</footer>
+	</body>
+</html>

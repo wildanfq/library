@@ -1,0 +1,15 @@
+---
+.title = "About",
+.date = @date("2026-05-19T23:30:00"),
+.author = "Wildan Firmani Quraisi",
+.layout = "page.shtml",
+.draft = false,
+---
+
+Semuanya bermula saat saya duduk di bangku kelas 5 SD. Kala itu, untuk pertama kalinya saya memiliki sebuah telepon seluler. Kehadiran gawai tersebut membuat rasa penasaran saya langsung meronta-ronta. Pada masa itu, harga kuota internet terasa sangat mahal, terlebih saya tinggal di desa dengan infrastruktur jaringan yang jauh dari kata layak.
+
+Pikiran saya mulai berkelana, "Bisa tidak ya, kita menggunakan internet secara gratis, atau minimal dengan harga yang lebih murah?"
+
+Dari sekadar iseng mencari tahu, langkah saya berlabuh pada sebuah komunitas di Facebook yang membahas tentang network tunneling. Di sanalah saya berkenalan dengan istilah opok (0 pulsa 0 kuota), config, SSH, server Singapura, HTTP Injector, KPN Tunnel, dan berbagai perkakas ajaib lainnya untuk memanipulasi penyedia layanan internet.
+
+Dari keberhasilan kecil itu, keberanian saya untuk mengulik (ngoprek) HP mulai tumbuh subur. Saya belajar melakukan root, menginstal custom ROM OS, flash TWRP, unlock bootloader, hingga masuk ke ranah yang lebih rumit seperti memodifikasi (cheat) permainan—mempelajari bagaimana sebuah sistem game bisa dimanipulasi untuk mengubah angka uang atau level di dalamnya.
