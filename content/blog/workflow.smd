@@ -1,6 +1,6 @@
 ---
 .title = "Workflow Otomatisasi",
-.date = @date("2026-05-19T23:50:00"),
+.date = @date("2026-05-20T23:10:00"),
 .author = "Wildan Firmani Quraisi",
 .layout = "post.shtml",
 .draft = false,
