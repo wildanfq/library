@@ -1,8 +1,12 @@
-#  Workflow Otomatisasi
-
-Dokumen ini memberikan panduan lengkap dan terstruktur untuk menyiapkan infrastruktur serta alur kerja CI/CD (Continuous Integration dan Continuous Deployment) yang profesional. Mulai dari pembuatan server VPS di Google Cloud, konfigurasi koneksi SSH, penyiapan repositori GitHub dengan branch protection, hingga otomatisasi build dan deployment menggunakan GitHub Actions dan GitHub Container Registry (GHCR). Seluruh proses dirancang agar developer hanya perlu fokus menulis kode tanpa harus mengelola server secara manual. Pada bagian akhir disertakan contoh konkret implementasi REST API sederhana menggunakan bahasa Golang (native, tanpa framework) untuk menguji alur dari pengembangan lokal hingga terdeploy ke server produksi.
-
 ---
+.title = "Workflow Otomatisasi",
+.date = @date("2026-05-19T23:50:00"),
+.author = "Wildan Firmani Quraisi",
+.layout = "post.shtml",
+.draft = false,
+---
+
+ Panduan lengkap untuk menyiapkan infrastruktur serta alur kerja CI/CD (Continuous Integration dan Continuous Deployment). Mulai dari pembuatan server VPS di Google Cloud, konfigurasi koneksi SSH, penyiapan repositori GitHub dengan branch protection, hingga otomatisasi build dan deployment menggunakan GitHub Actions dan GitHub Container Registry (GHCR). Seluruh proses dirancang agar developer hanya perlu fokus menulis kode tanpa harus mengelola server secara manual.
 
 ## 1. Persiapan Server VPS di Google Cloud
 

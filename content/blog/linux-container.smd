@@ -8,8 +8,6 @@
 
 Panduan ini membantu Anda memulai LXD. Anda akan menginstal, menginisialisasi, lalu menggunakan CLI (atau UI web) untuk bekerja dengan *instance* (container dan virtual machine). Anda juga belajar konfigurasi, snapshot, dan lainnya.
 
----
-
 ## 1. Persyaratan
 
 * Ruang kosong minimal **20 GiB** & Sistem **Linux** sudah terinstal

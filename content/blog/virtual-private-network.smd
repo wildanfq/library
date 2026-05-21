@@ -8,7 +8,6 @@
 
 Panduan teknis yang komprehensif untuk membangun terowongan (tunnel) VPN yang aman, privat, dan terenkripsi antara infrastruktur lokal (*on-premise* seperti server lokal atau laptop) dengan *Virtual Private Server* (VPS) yang berjalan di Google Cloud Compute Engine.
 
----
 
 ## 1. Konsep Dasar Arsitektur & Topologi
 

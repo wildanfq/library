@@ -6,9 +6,7 @@
 .draft = false,
 ---
 
-**Tujuan:** Panduan ini menjelaskan langkah-langkah dari nol untuk membuat Virtual Machine (VM) di Google Cloud, mengatur keamanan Firewall, mengonfigurasi SSH Key di OS Ubuntu Linux lokal, hingga melakukan koneksi dan pengujian server.
-
----
+Panduan ini menjelaskan langkah-langkah dari nol untuk membuat Virtual Machine (VM) di Google Cloud, mengatur keamanan Firewall, mengonfigurasi SSH Key di OS Ubuntu Linux lokal, hingga melakukan koneksi dan pengujian server.
 
 ## 1. Pembuatan Virtual Machine (VM) di GCP
 
