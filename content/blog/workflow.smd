@@ -1,0 +1,310 @@
+#  Workflow Otomatisasi
+
+Dokumen ini memberikan panduan lengkap dan terstruktur untuk menyiapkan infrastruktur serta alur kerja CI/CD (Continuous Integration dan Continuous Deployment) yang profesional. Mulai dari pembuatan server VPS di Google Cloud, konfigurasi koneksi SSH, penyiapan repositori GitHub dengan branch protection, hingga otomatisasi build dan deployment menggunakan GitHub Actions dan GitHub Container Registry (GHCR). Seluruh proses dirancang agar developer hanya perlu fokus menulis kode tanpa harus mengelola server secara manual. Pada bagian akhir disertakan contoh konkret implementasi REST API sederhana menggunakan bahasa Golang (native, tanpa framework) untuk menguji alur dari pengembangan lokal hingga terdeploy ke server produksi.
+
+---
+
+## 1. Persiapan Server VPS di Google Cloud
+
+Langkah pertama adalah membuat sebuah mesin virtual (VM) yang akan berfungsi sebagai server produksi. Buka Google Cloud Console, masuk ke menu Compute Engine, lalu pilih VM Instances. Klik tombol Create Instance, beri nama server (misalnya `server-produksi`), pilih region terdekat dengan lokasi pengguna, dan untuk jenis mesin gunakan tipe `e2-micro` agar tetap memanfaatkan kuota gratis. Pada bagian boot disk, pilih sistem operasi Ubuntu 22.04 LTS. Centang opsi Allow HTTP traffic dan Allow HTTPS traffic di bagian firewall agar aplikasi nantinya dapat diakses publik melalui port 80 dan 443. Setelah semua konfigurasi selesai, klik Create dan catat alamat IP publik server yang muncul.
+
+Selanjutnya, buka terminal server dengan mengklik tombol SSH di samping nama instance. Di dalam sesi SSH, perbarui sistem dan instal Docker dengan menjalankan perintah berikut secara berurutan:
+
+```bash
+sudo apt update && sudo apt upgrade -y
+sudo apt install docker.io -y
+sudo systemctl start docker
+sudo systemctl enable docker
+sudo usermod -aG docker $USER
+```
+
+Setelah itu, keluar dari sesi SSH dengan mengetik `exit`, lalu masuk kembali agar perubahan grup pengguna untuk Docker berlaku. Verifikasi bahwa Docker telah terinstal dengan baik menggunakan perintah `docker --version`. Pada tahap ini, server VPS sudah siap menerima dan menjalankan container dari GHCR.
+
+---
+
+## 2. Membuat SSH Key untuk Koneksi Aman dari GitHub ke VPS
+
+Agar GitHub Actions dapat mengakses server VPS tanpa harus memasukkan password setiap saat, kita perlu membuat pasangan kunci SSH (public key dan private key). Lakukan proses ini di terminal laptop lokal Anda (bukan di server). Jalankan perintah berikut:
+
+```bash
+ssh-keygen -t rsa -b 4096 -C "github-deploy"
+```
+
+Tekan Enter untuk menyimpan kunci di lokasi default (`~/.ssh/id_rsa`), dan kosongkan passphrase dengan menekan Enter dua kali. Perintah ini akan menghasilkan dua file: kunci privat (`id_rsa`) dan kunci publik (`id_rsa.pub`). Kunci privat bersifat sangat rahasia dan tidak boleh dibagikan kepada siapa pun, sedangkan kunci publik akan dipasang ke server VPS.
+
+Pasang kunci publik ke server VPS melalui Google Cloud Console. Buka menu Compute Engine → Metadata → SSH Keys, lalu klik Add SSH Key. Buka file `~/.ssh/id_rsa.pub` di komputer Anda, salin seluruh isinya, dan tempelkan ke kolom yang tersedia, kemudian klik Save. Untuk menguji apakah konfigurasi sudah benar, coba koneksi dari laptop ke VPS dengan perintah:
+
+```bash
+ssh -i ~/.ssh/id_rsa <username>@<IP_VPS>
+```
+
+Ganti `<username>` dengan nama pengguna yang tertera di instance GCP (biasanya sama dengan nama akun GCP Anda). Jika berhasil masuk tanpa dimintai password, maka konfigurasi SSH telah berhasil. Catat baik-baik username VPS ini, karena akan diperlukan untuk secret di GitHub.
+
+---
+
+## 3. Menyiapkan Repositori GitHub dan Branch Protection
+
+Buat repositori baru di GitHub, misalnya diberi nama `simple-rest-api`. Inisialisasi repositori tersebut dengan file README.md. Setelah repositori terbuat, buat cabang `develop` dari cabang `main` dengan cara memilih branch `main` pada dropdown branch selector, mengetik `develop`, lalu klik Create branch.
+
+Selanjutnya, kita akan melindungi cabang `main` agar tidak ada yang bisa melakukan push langsung ke cabang tersebut. Buka tab Settings → Branches, klik Add branch protection rule. Isi branch name pattern dengan `main`. Centang opsi Require a pull request before merging dan Require approvals (isikan angka 1). Centang juga opsi Do not allow bypassing the above settings, lalu klik Create. Dengan pengaturan ini, setiap perubahan yang akan masuk ke cabang `main` harus melalui pull request yang telah disetujui oleh minimal satu reviewer. Ini memastikan kualitas kode tetap terjaga.
+
+---
+
+## 4. Menyiapkan GitHub Container Registry (GHCR) dan Secret
+
+GHCR adalah registry image Docker bawaan GitHub yang dapat diakses secara gratis. Agar GitHub Actions bisa mengirim image ke GHCR, kita perlu membuat Personal Access Token (PAT) dengan hak akses baca dan tulis ke packages. Buka GitHub, klik foto profil → Settings → Developer settings → Personal access tokens → Tokens (classic). Klik Generate new token (classic), beri nama misalnya `ghcr-write`, atur masa berlaku sesuai kebutuhan (disarankan 90 hari atau lebih), lalu pada bagian scope centang **write:packages**, **read:packages**, dan **repo**. Klik Generate token, lalu segera salin token tersebut karena hanya akan ditampilkan satu kali.
+
+Token ini harus disimpan sebagai secret di repositori. Buka repositori proyek Anda, masuk ke tab Settings → Secrets and variables → Actions, lalu klik New repository secret. Buat secret dengan nama `GHCR_TOKEN` dan isi dengan token yang baru disalin. Selanjutnya, tambahkan tiga secret lain yang diperlukan untuk mengakses VPS melalui SSH:
+
+- `VPS_IP`: diisi dengan alamat IP publik server VPS.
+- `VPS_USERNAME`: diisi dengan username SSH VPS yang sudah dicatat sebelumnya.
+- `VPS_SSH_KEY`: diisi dengan seluruh isi file `~/.ssh/id_rsa` (kunci privat). Buka file tersebut di laptop Anda, salin dari baris `-----BEGIN RSA PRIVATE KEY-----` hingga `-----END RSA PRIVATE KEY-----`, lalu tempelkan.
+
+Dengan keempat secret ini (`GHCR_TOKEN`, `VPS_IP`, `VPS_USERNAME`, `VPS_SSH_KEY`), GitHub Actions memiliki semua yang diperlukan untuk membangun image, mengirim ke GHCR, dan melakukan deployment ke VPS.
+
+---
+
+## 5. Membuat Workflow CI/CD di GitHub Actions
+
+Sekarang kita akan membuat file workflow yang akan berjalan secara otomatis setiap kali ada push ke cabang `main`. Di dalam repositori, buat folder `.github/workflows` dan di dalamnya buat file bernama `deploy.yml` dengan isi sebagai berikut:
+
+```yaml
+name: Build, Push ke GHCR, dan Deploy ke VPS
+
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout kode
+        uses: actions/checkout@v4
+
+      - name: Login ke GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_TOKEN }}
+
+      - name: Build image Docker
+        run: docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest .
+
+      - name: Push image ke GHCR
+        run: docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: SSH ke VPS dan jalankan container
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_IP }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            echo "Login ke GHCR dari VPS..."
+            echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            echo "Menarik image terbaru..."
+            docker pull ghcr.io/${{ github.repository }}:latest
+            echo "Menghentikan dan menghapus container lama..."
+            docker stop server-api || true
+            docker rm server-api || true
+            echo "Menjalankan container baru..."
+            docker run -d -p 80:8080 --name server-api --restart unless-stopped ghcr.io/${{ github.repository }}:latest
+            echo "Membersihkan image lama yang tidak terpakai..."
+            docker image prune -f
+```
+
+Penjelasan singkat workflow di atas: Job pertama (`build-and-push`) melakukan checkout kode, login ke GHCR menggunakan token yang disimpan, membangun image Docker dengan tag `latest`, lalu mendorongnya ke registry. Job kedua (`deploy`) hanya akan berjalan jika job pertama sukses. Job ini menggunakan action `appleboy/ssh-action` untuk terhubung ke VPS melalui SSH, kemudian menjalankan serangkaian perintah: login ke GHCR dari VPS, menarik image terbaru, menghentikan dan menghapus container lama jika ada, lalu menjalankan container baru dengan memetakan port 80 host ke port 8080 di dalam container. Opsi `--restart unless-stopped` memastikan container akan hidup kembali secara otomatis jika server VPS reboot.
+
+---
+
+## 6. Persiapan Akhir di VPS (Hanya Sekali)
+
+Sebelum deployment otomatis berjalan, pastikan VPS dalam keadaan bersih dan tidak ada proses yang menggunakan port 80. Lakukan SSH ke VPS secara manual satu kali, jalankan perintah `docker --version` hanya untuk verifikasi bahwa Docker sudah terinstal. Jika sebelumnya ada web server seperti Apache atau Nginx yang berjalan, hentikan dengan `sudo systemctl stop apache2` atau sejenisnya. Tidak perlu melakukan pull atau run container secara manual karena semua akan dikelola oleh GitHub Actions. Pastikan juga VPS dapat mengakses `ghcr.io` (umumnya sudah diizinkan). Setelah itu, Anda dapat keluar dari sesi SSH.
+
+---
+
+## Alur Kerja Developer
+
+Dengan infrastruktur yang telah disiapkan, alur kerja developer menjadi sangat sederhana dan terstruktur. Berikut adalah langkah-langkah yang harus dilakukan developer mulai dari awal hingga perubahan kode terdeploy ke produksi.
+
+### 1. Clone Repositori
+
+Developer membuka terminal di komputer lokal dan melakukan clone repositori yang telah disiapkan:
+
+```bash
+git clone https://github.com/username/simple-rest-api.git
+cd simple-rest-api
+```
+
+### 2. Menulis Kode Aplikasi Golang (REST API Sederhana)
+
+Developer membuat file `main.go` dengan isi kode berikut. Aplikasi ini menggunakan library standar `net/http` dan akan merespons dua endpoint: `GET /` mengembalikan pesan selamat datang, serta `POST /data` menerima JSON `{"message": "..."}` dan mengembalikannya kembali.
+
+**File `main.go`**:
+
+```go
+package main
+
+import (
+	"encoding/json"
+	"log"
+	"net/http"
+)
+
+type RequestData struct {
+	Message string `json:"message"`
+}
+
+type ResponseData struct {
+	Status  string      `json:"status"`
+	Data    interface{} `json:"data,omitempty"`
+	Error   string      `json:"error,omitempty"`
+}
+
+func main() {
+	http.HandleFunc("/", handleHome)
+	http.HandleFunc("/data", handleData)
+
+	log.Println("Server berjalan di port 8080")
+	log.Fatal(http.ListenAndServe(":8080", nil))
+}
+
+func handleHome(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method tidak diizinkan", http.StatusMethodNotAllowed)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(ResponseData{Status: "success", Data: "Selamat datang di REST API Golang"})
+}
+
+func handleData(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method tidak diizinkan", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req RequestData
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(ResponseData{Status: "error", Error: "JSON tidak valid"})
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(ResponseData{Status: "success", Data: req})
+}
+```
+
+Selanjutnya, developer membuat file `go.mod` untuk manajemen dependensi. Jalankan perintah:
+
+```bash
+go mod init simple-rest-api
+```
+
+Atau buat file `go.mod` secara manual dengan isi:
+
+```
+module simple-rest-api
+
+go 1.21
+```
+
+Kemudian jalankan `go mod tidy` untuk menghasilkan file `go.sum` jika diperlukan.
+
+### 3. Menyediakan Dockerfile
+
+Developer memastikan bahwa file `Dockerfile` (yang sudah ada atau dibuat sekarang) memiliki isi sebagai berikut:
+
+```dockerfile
+FROM golang:1.21-alpine AS builder
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN go build -o server .
+
+FROM alpine:latest
+WORKDIR /root/
+COPY --from=builder /app/server .
+EXPOSE 8080
+CMD ["./server"]
+```
+
+### 4. Testing Aplikasi Secara Lokal (Menggunakan Docker)
+
+Developer melakukan testing lokal untuk memastikan kode berfungsi dengan baik. Di dalam direktori proyek, jalankan:
+
+```bash
+docker build -t simple-rest-api .
+docker run -d -p 8080:8080 --name test-api simple-rest-api
+```
+
+Kemudian uji endpoint menggunakan `curl`:
+
+```bash
+curl http://localhost:8080/
+# Output: {"status":"success","data":"Selamat datang di REST API Golang"}
+
+curl -X POST http://localhost:8080/data -H "Content-Type: application/json" -d '{"message":"Halo dari developer"}'
+# Output: {"status":"success","data":{"message":"Halo dari developer"}}
+```
+
+Setelah testing selesai, hapus container test:
+
+```bash
+docker stop test-api && docker rm test-api
+```
+
+### 5. Membuat Cabang Fitur dan Push ke GitHub
+
+Developer membuat cabang baru dari `main` (atau dari `develop` sesuai kebijakan tim). Contoh:
+
+```bash
+git checkout -b fitur-tambah-logging
+git add .
+git commit -m "Menambahkan REST API sederhana GET dan POST"
+git push origin fitur-tambah-logging
+```
+
+### 6. Membuka Pull Request (PR)
+
+Developer membuka browser, masuk ke repositori GitHub, lalu klik tombol "Compare & pull request" yang muncul untuk cabang `fitur-tambah-logging`. Isi judul dan deskripsi PR, kemudian klik "Create pull request". Tim akan melakukan review.
+
+### 7. Review dan Merge
+
+Reviewer (misalnya senior developer) melihat perubahan kode, memberikan komentar jika perlu, dan akhirnya menyetujui pull request. Setelah mendapatkan setidaknya 1 approval, reviewer atau developer yang memiliki hak akses mengklik tombol "Merge pull request" untuk menggabungkan cabang `fitur-tambah-logging` ke `main`.
+
+### 8. Deployment Otomatis oleh CI/CD
+
+Segera setelah merge terjadi, GitHub Actions akan menjalankan workflow `deploy.yml` secara otomatis. Proses ini meliputi: checkout kode dari `main`, login ke GHCR, build image Docker, push image ke GHCR, lalu SSH ke VPS, login ke GHCR dari VPS, menarik image terbaru, menghentikan dan menghapus container lama, serta menjalankan container baru dengan nama `server-api` pada port 80. Developer dapat memantau jalannya proses di tab Actions repositori.
+
+### 9. Verifikasi Deployment
+
+Setelah workflow selesai, aplikasi sudah berjalan di server produksi. Developer dapat mengakses melalui alamat IP publik VPS:
+
+```bash
+curl http://<IP_VPS>/
+# Akan menampilkan respons yang sama seperti saat testing lokal
+```
+
+Dengan alur di atas, developer tidak perlu pernah menyentuh server VPS, tidak perlu menginstal Docker di laptop jika hanya menulis kode (kecuali untuk pengujian lokal), dan tidak perlu menjalankan perintah build atau push secara manual. Seluruh proses dari commit hingga deploy berjalan otomatis dan terintegrasi.
+
+---
