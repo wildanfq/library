@@ -1,0 +1,48 @@
+---
+.title = "Roadmap Menjadi Mobile Developer 2026",
+.date = @date("2026-05-29T23:10:00"),
+.author = "Wildan Firmani Quraisi",
+.layout = "post.shtml",
+.draft = false,
+---
+
+Dokumentasi ini disusun sebagai peta jalan komprehensif serta sumber referensi belajar bagi Anda yang ingin meniti karier sebagai Mobile Developer profesional. Kurikulum ini dirancang secara terstruktur untuk memandu Anda melalui seluruh ekosistem pengembangan perangkat lunak modern. Anda akan mempelajari tahapan dari merancang antarmuka aplikasi di sisi klien (frontend), membangun logika sistem di sisi server (backend), mengelola basis data, hingga menerapkan otomatisasi dan infrastruktur untuk penyebaran aplikasi ke publik (DevOps).
+
+---
+
+### 1. Pengembangan Antarmuka Mobile
+
+Langkah awal dan paling fundamental adalah menguasai bahasa pemrograman serta *framework* yang digunakan untuk membangun antarmuka visual dan pengalaman pengguna (UI/UX) pada perangkat mobile.
+
+* **Dart**: Sebelum melangkah ke pembuatan aplikasi, pemahaman mendalam tentang Dart adalah hal mutlak karena ini merupakan bahasa pemrograman utama yang menggerakkan Flutter. Melalui dokumentasi ini, Anda akan mempelajari dasar sintaks, struktur data, hingga konsep pemrograman berorientasi objek (OOP) yang menjadi fondasi penulisan kode yang bersih. Pelajari selengkapnya di [Dart Docs](https://dart.dev/docs).
+* **Flutter**: Setelah fondasi Dart Anda kuat, Anda siap mengeksplorasi Flutter. *Framework* buatan Google ini memungkinkan Anda menciptakan aplikasi Android dan iOS berperforma tinggi secara bersamaan hanya dengan satu basis kode (*cross-platform*). Dokumentasi resminya akan memandu Anda memahami cara kerja *widget*, sistem navigasi, hingga manajemen *state* dan performa. Akses panduannya di [Flutter Docs](https://docs.flutter.dev/).
+
+### 2. Pengembangan Layanan Server
+
+Aplikasi mobile masa kini membutuhkan sistem *backend* yang tangguh untuk memproses logika bisnis, mengelola autentikasi pengguna, dan mendistribusikan data ke aplikasi melalui API. Bahasa Go (Golang) sangat direkomendasikan karena arsitekturnya yang ringan, efisien, dan memiliki performa eksekusi yang sangat cepat.
+
+* **Dasar Pemrograman Go**: Bagi pemula, merajut pemahaman dasar sangatlah penting. Anda bisa memulai pembelajaran melalui materi berbahasa Indonesia yang disusun secara sistematis dan mudah dicerna di [Dasar Pemrograman Golang - Novalagung](https://dasarpemrogramangolang.novalagung.com/).
+* **Sintaks dan Latihan Interaktif**: Untuk mempercepat pengenalan terhadap aturan penulisan kode dan membiasakan diri melalui latihan langsung, Anda dapat memanfaatkan platform tutorial interaktif di [W3Schools Go Tutorial](https://www.w3schools.com/go/).
+* **Pemahaman Konsep Lanjutan**: Guna memperdalam wawasan mengenai ekosistem Go, *standard library*, dan standar industri dalam merancang sistem yang skalabel, jadikan dokumentasi resmi ini sebagai rujukan utama Anda di [Go Learn](https://go.dev/learn/).
+
+### 3. Pengelolaan Penyimpanan Data
+
+Data adalah inti dari setiap aplikasi. Sebagai pengembang, Anda harus merancang arsitektur penyimpanan yang aman dan efisien, baik yang berada di dalam perangkat pengguna secara lokal maupun terpusat di server *cloud*.
+
+* **SQLite (Database Lokal)**: Teknologi ini sangat esensial untuk menyimpan data langsung di dalam memori penyimpanan *smartphone*. Penggunaan SQLite memastikan aplikasi Anda dapat merespons dengan cepat dan tetap berfungsi secara optimal meskipun pengguna sedang tidak memiliki koneksi internet (*offline mode*). Panduan implementasinya tersedia di [SQLite Docs](https://sqlite.org/docs.html).
+* **PostgreSQL (Database Server)**: Untuk menangani penyimpanan data dalam skala besar yang saling terhubung di server, PostgreSQL adalah pilihan yang sangat tepat. Ini adalah sistem basis data relasional (*RDBMS*) kelas enterprise yang terkenal akan keamanannya, stabilitasnya, dan fitur-fiturnya yang kaya. Dokumentasi teknisnya dapat dipelajari di [PostgreSQL Docs](https://www.postgresql.org/docs/).
+
+### 4. Kontainerisasi
+
+Memasuki fase penyebaran (*deployment*), fokus Anda bergeser pada bagaimana mengemas aplikasi *backend* agar terisolasi dengan baik. Hal ini menjamin aplikasi dapat berjalan dengan stabil di server mana pun tanpa terpengaruh oleh perbedaan lingkungan sistem operasi.
+
+* **Docker**: Docker merevolusi cara aplikasi didistribusikan dengan membungkus kode beserta seluruh ketergantungannya (*dependencies*) ke dalam sebuah wadah standar yang disebut *container*. Ini memastikan aplikasi Anda bebas dari masalah kompatibilitas di server produksi. Pelajari teknologinya di [Docker Docs](https://docs.docker.com/).
+* **Podman**: Sebagai alternatif yang lebih modern dan aman, Podman memungkinkan Anda mengelola *container* tanpa perlu mengandalkan proses yang berjalan di latar belakang (*daemonless*) atau hak akses *root*. Ini menjadikannya pilihan favorit untuk keamanan tingkat lanjut. Panduannya bisa dibaca di [Podman Docs](https://podman.io/docs).
+
+### 5. Otomatisasi Alur Kerja & Infrastruktur Cloud
+
+Tahap pemungkas ini akan melengkapi keahlian Anda dengan kemampuan mengotomatiskan proses rilis kode dan menyediakan infrastruktur peladen (*server*) yang andal agar aplikasi dapat diakses secara global.
+
+* **CI/CD dengan GitHub Actions**: Anda dapat menghilangkan proses manual yang repetitif dengan merancang alur kerja otomatis (*pipeline*). GitHub Actions memampukan Anda untuk secara otomatis menguji kelayakan kode, membangun ulang aplikasi (*build*), dan langsung menyebarkannya ke server produksi setiap kali Anda menyimpan perubahan baru di repositori GitHub. Dokumentasi integrasinya dapat ditemukan di [GitHub Actions Docs](https://docs.github.com/en/actions).
+* **Nomad**: Saat skala aplikasi membesar dan Anda memiliki banyak *container* yang berjalan, Anda membutuhkan semacam "konduktor" untuk mengaturnya. Nomad dari HashiCorp hadir sebagai alat orkestrasi yang jauh lebih sederhana dan fleksibel untuk menjadwalkan serta mengelola *container* di berbagai server. Akses dokumentasinya di [Nomad Docs](https://developer.hashicorp.com/nomad/docs).
+* **Cloud & Virtual Private Server (VPS)**: Agar *backend* dan *database* Anda hidup dan bisa melayani pengguna aplikasi dari seluruh dunia, Anda membutuhkan infrastruktur *cloud*. Anda dapat merancang server berskala global menggunakan [Google Cloud Platform (GCP)](https://cloud.google.com/), atau menyewa VPS yang lebih sederhana dan ekonomis seperti DigitalOcean, Linode, atau Biznet Gio untuk kebutuhan peladen virtual tingkat awal yang tetap mumpuni.
