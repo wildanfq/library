@@ -1,67 +1,9 @@
 ---
-.title = "Home",
+.title = "About",
 .date = @date("1990-01-01T00:00:00"),
-.author = "Sample Author",
+.author = "Wildan Firmani Quraisi",
 .layout = "index.shtml",
 .draft = false,
 ---
 
-## Dua Cara Belajar yang Berbeda
-
-Kisah ini bermula saat **Adi** dan **Ida** masih duduk di bangku kelas 1 SD. Suatu hari, guru mereka memberikan sebuah tugas yang cukup menantang bagi anak seusia mereka: menghafal perkalian 1 sampai 10. Syaratnya, minggu depan setiap murid harus maju satu per satu ke depan kelas untuk setoran hafalan.
-
-Sesampainya di rumah, Adi tidak langsung menghafal. Ia malah duduk termenung. Adi adalah tipe anak yang tidak bisa sekadar menerima materi mentah-mentah. Ia mulai berpikir keras, *"Matematika itu sebenarnya apa? Bagaimana cara kerjanya?"*
-
-Ia mencoba mencari logikanya sendiri. Kenapa 1 x 1 hasilnya 1? Oh, mungkin karena tidak ada kelipatan yang lebih besar lagi. Lalu ia mencoba 2 x 2. Di bayangannya, angka 2 itu dilipat menjadi dua, dan benar saja hasilnya 4. Sayangnya, metode visualisasi ini memakan waktu cukup lama. Adi sebenarnya bisa menyelesaikan perkalian acak, tetapi ia harus merakit konsepnya satu per satu di dalam kepala. Ia sangat paham konsepnya, tetapi kalah dalam hal kecepatan.
-
-Berbeda terbalik dengan Adi, Ida memilih jalur yang lebih praktis. Setiap malam sebelum tidur, sambil makan, bahkan saat bermain, ia terus berkomat-kamit menghafal perkalian. Lidahnya sudah sangat luwes melafalkan 1 x 1 = 1 sampai 10 x 10 = 100. Ida tidak ambil pusing dengan konsep; baginya yang penting adalah hafal di luar kepala dengan cepat.
-
----
-
-## Ujian Pertama di Kelas
-
-Hari penilaian yang dinanti pun tiba. Guru memanggil murid satu per satu, dan Ida mendapat giliran pertama. Dengan penuh percaya diri, Ida melafalkan seluruh perkalian dengan sangat lancar tanpa ada satu pun yang meleset. Guru dan teman-temannya langsung terpukau. Di mata mereka, Ida adalah anak yang jenius karena kemampuan menghafalnya yang luar biasa.
-
-Ketika giliran Adi tiba, suasananya berubah drastis. Adi berdiri dengan gemetaran karena ia tidak menghafal, melainkan berusaha "memahami". Ia memejamkan mata, memiringkan kepalanya sedikit, dan mulai membayangkan objek di otaknya. Setiap soal ia hitung secara manual di dalam kepala. Semakin besar angkanya, semakin lama ia berpikir. Namun di tengah proses yang lambat itu, Adi mulai menemukan sebuah pola unik yang membuat hitungannya menjadi lebih cepat.
-
-Setelah hampir sepuluh menit yang terasa begitu lama, Adi akhirnya selesai. Semua jawabannya benar, tetapi tidak ada yang bertepuk tangan. Teman-temannya justru menganggap Adi lambat dan kurang pintar jika dibandingkan dengan Ida yang hanya butuh waktu singkat.
-
----
-
-## Tantangan dari Kakak KKN
-
-Beberapa waktu kemudian, sekolah mereka kedatangan mahasiswa KKN yang cerdas. Suatu hari, salah satu dari mereka mengadakan kuis perkalian 1 sampai 10. Seperti biasa, Ida dengan cepat menyapu bersih semua soal, membuat semua orang makin yakin bahwa dialah yang terpintar di kelas. Sementara itu, Adi hanya bisa duduk diam di pojokan karena selalu kalah cepat dalam memperebutkan jawaban.
-
-Menjelang sesi berakhir, seorang mahasiswi kedokteran bernama **Kak Nadia** maju ke depan kelas untuk memberikan sebuah tantangan kejutan.
-
-> "Adik-adik, siapa yang bisa menjawab soal ini dalam waktu lima menit, Kakak akan berikan hadiah cokelat!" tantang Kak Nadia sambil menulis di papan tulis: **13 x 17 = ...?**
-
-Seketika kelas menjadi hening. Semua pandangan langsung tertuju pada Ida, sang primadona kelas. Namun, Ida hanya terdiam dengan wajah bingung. Dalam hati ia membatin, *"Aduh, aku tidak hafal soal itu. Kan hafalan perkalian hanya sampai 10 x 10."*
-
----
-
-## Pola Pikir yang Membuktikan Hasil
-
-Di saat semua anak mati kutu, Adi yang berada di pojokan kembali memejamkan mata. Ia mencoba memproses soal rumit tersebut menggunakan pola matematika yang sempat ia temukan sebelumnya. Meski sempat berkeringat dingin karena ragu, ia berhasil mendapatkan sebuah angka. Ia menghitung ulang sekali lagi untuk memastikan, dan hasilnya tetap sama.
-
-Adi sempat bimbang untuk maju karena tahu teman-temannya sering menganggapnya lambat. Namun, ada bisikan keyakinan di hatinya bahwa menjadi pintar bukan sekadar tentang seberapa cepat seseorang menghafal.
-
-Ia pun memberanikan diri berjalan ke depan kelas di bawah tatapan sinis teman-temannya. Tanpa ragu, ia mengambil spidol dan menuliskan angka dengan tegas: **221**.
-
-Begitu Adi kembali ke bangkunya, kelas langsung riuh dengan nada meragukan. Banyak yang mengira Adi hanya asal tebak atau bahkan curang. Namun, Kak Nadia justru terdiam. Setelah memeriksa jawaban tersebut beberapa kali, ia tersenyum lebar.
-
-"Selamat, Adi! Jawaban kamu benar. Hasilnya memang 221. Ini cokelat untuk kamu," kata Kak Nadia bangga.
-
-Satu kelas langsung heboh dan tidak percaya. Karena penasaran dengan cara berpikir Adi yang unik, Kak Nadia memanggilnya kembali ke depan dan memberikan satu soal baru lagi. "Adi, coba Kakak beri soal baru ya. Kali ini, jangan pakai hafalan, tapi pakai cara kamu sendiri." Kak Nadia menuliskan: **20 x 20 = ...?**
-
-Adi tidak panik. Ia memejamkan mata sejenak, memvisualisasikan angka-angka tersebut dengan pola barunya. Kurang dari satu menit, ia membuka mata dan menuliskan: **400**.
-
-Melihat kelas yang semakin penasaran, Kak Nadia meminta Adi untuk menjelaskan metodenya kepada teman-temannya. Dengan bahasa yang sederhana dan polos, Adi menjelaskan:
-
-"Begini teman-teman... Angka itu kan ada satuan, puluhan, dan ratusan. Perkalian itu intinya adalah penjumlahan yang menggandakan. Kalau 20 x 20, kita tidak perlu menghitungnya satu-satu. Ambil saja angka depannya dulu, yaitu 2 dan 2. 2 x 2 kan hasilnya 4. Nah, karena tadi ada dua angka nol yang kita simpan, sekarang kita kembalikan lagi di belakang angka 4. Jadi hasilnya 400. Mudah, kan? Ini namanya pola puluhan."
-
-Seketika, teman-temannya manggut-manggut paham. Hari itu, semua orang akhirnya menyadari bahwa Adi tidak curang. Ia hanya memiliki caranya sendiri untuk memahami sesuatu, bukan sekadar menghafalnya.
-
----
-
-*Note: Cerita ini diangkat dari kisah nyata.*
+Website ini pada dasarnya adalah perpustakaan digital pribadi saya. Sebuah wadah untuk mendokumentasikan setiap proses belajar, eksplorasi, dan keahlian saya di dunia komputer. Meskipun begitu, saya membuatnya terbuka dengan harapan catatan-catatan di sini juga bisa menjadi referensi yang bermanfaat bagi siapa saja yang mampir.

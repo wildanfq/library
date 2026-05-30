@@ -1,7 +1,7 @@
 ---
 .title = "Blog",
 .date = @date("1990-01-01T00:00:00"),
-.author = "Sample Author",
+.author = "Wildan Firmani Quraisi",
 .layout = "blog.shtml",
 .alternatives = [{
     .name = "rss",
@@ -11,4 +11,4 @@
 .draft = false,
 ---
 
-Dokumentasi ini berfungsi sebagai pusat catatan teknis (knowledge base) dan standar operasional personal saya.
+Jika Anda menemukan kesalahan, bagian yang kurang tepat, atau memiliki saran perbaikan, saya akan sangat berterima kasih jika Anda berkenan untuk berkontribusi. Anda bisa membuka *Issue* atau mengirimkan *Pull Request* (PR) melalui repositori GitHub saya di [wildanfq/library99](https://github.com/wildanfq/library99).

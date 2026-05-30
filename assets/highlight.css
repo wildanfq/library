@@ -7,10 +7,12 @@
     --dark-red: #be5046;
     --comment-gray: #7f848e;
     --magenta: #c678dd;
+    --code-bg: #1e222a;
+    --code-border: #282c34;
 }
 
 pre {
-    background-color: #1e222a;
+    background-color: var(--code-bg);
     color: #abb2bf;
     padding: 16px 20px;
     border-radius: 8px;
@@ -19,26 +21,34 @@ pre {
         "JetBrains Mono", "Fira Code", "SF Mono", Monaco, Consolas, monospace;
     font-size: 0.9em;
     line-height: 1.6;
-    border: 1px solid #282c34;
+    border: 1px solid var(--code-border);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    margin: 1.5em 0; /* Menambahkan jarak atas dan bawah */
 }
 
 pre::-webkit-scrollbar {
-    height: 6px;
+    height: 8px; /* Sedikit ditebalkan agar lebih mudah digeser di desktop */
 }
 
 pre::-webkit-scrollbar-track {
-    background: #1e222a;
+    background: var(--code-bg);
     border-radius: 0 0 8px 8px;
 }
 
 pre::-webkit-scrollbar-thumb {
     background: #3e4452;
     border-radius: 4px;
+    border: 2px solid var(--code-bg); /* Memberikan efek padding pada scrollbar */
 }
 
 pre::-webkit-scrollbar-thumb:hover {
-    background: #4b5263;
+    background: #5c6370;
+}
+
+pre code {
+    background: none;
+    padding: 0;
+    border-radius: 0;
 }
 
 pre code .keyword,

@@ -11,9 +11,8 @@
 	<body id="body">
 		<header class="site-header">
 			<nav class="top-nav">
-				<a class="nav-link" href="$site.page('').link()">Home</a>
+				<a class="nav-link" href="$site.page('').link()">About</a>
 				<a class="nav-link" href="$site.page('blog').link()">Blog</a>
-				<a class="nav-link" href="$site.page('about').link()">About</a>
 			</nav>
 		</header>
 
